@@ -29,17 +29,22 @@
             overflow-x: hidden;
         }
 
-        :fullscreen .app-container, :-webkit-full-screen .app-container {
-            max-width: none; border: none; width: 100vw; height: 100vh; overflow: hidden;
-        }
-        :fullscreen #video-wrapper, :-webkit-full-screen #video-wrapper {
-            width: 100vw !important; height: 100vh !important; aspect-ratio: auto;
+        /* Fixed Fullscreen CSS */
+        #video-wrapper:fullscreen, #video-wrapper:-webkit-full-screen {
+            width: 100vw !important;
+            height: 100vh !important;
+            max-width: none !important;
+            max-height: none !important;
+            border: none !important;
+            border-radius: 0 !important;
+            aspect-ratio: auto !important;
         }
 
+        /* Standard Progress Bar */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 0; padding: 0; pointer-events: auto; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%;
-            background: #00e6e6; cursor: pointer; margin-top: -5px; box-shadow: 0 0 5px rgba(0,230,230,0.5);
+            background: #00e6e6; cursor: pointer; margin-top: -5px; box-shadow: 0 0 5px rgba(0,230,230,0.8);
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: rgba(255, 255, 255, 0.3); border-radius: 2px;
@@ -53,8 +58,6 @@
 
         .snap-x { scroll-snap-type: x mandatory; }
         .snap-center { scroll-snap-align: center; }
-        
-        /* Smooth scrolling for auto slider */
         #hero-carousel { scroll-behavior: smooth; }
     </style>
 </head>
@@ -85,17 +88,13 @@
             </header>
 
             <main>
-                <!-- Hero Banner Carousel - Cinematic PC Fix & Auto Slide -->
+                <!-- Hero Banner Carousel -->
                 <section class="mt-2 w-full overflow-hidden">
                     <div class="flex overflow-x-auto snap-x no-scrollbar w-full" id="hero-carousel">
                         
-                        <!-- Hero Item 1: Mad Concrete Dreams -->
                         <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(5)">
-                            <!-- Background Blur for PC -->
                             <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
-                            <!-- Main Sharp Image (Contained) -->
                             <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
-                            
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
                             <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
                             <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
@@ -107,13 +106,9 @@
                             </div>
                         </div>
 
-                        <!-- Hero Item 2: The Legend of Kitchen Soldier -->
                         <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(6)">
-                            <!-- Background Blur for PC -->
                             <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
-                            <!-- Main Sharp Image (Contained) -->
                             <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
-                            
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
                             <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
                             <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
@@ -126,7 +121,6 @@
                         </div>
 
                     </div>
-                    <!-- Carousel Indicators -->
                     <div class="flex justify-center gap-1.5 mt-3">
                         <div class="w-4 h-1.5 rounded-full bg-white transition-all" id="dot-1"></div>
                         <div class="w-2 h-1.5 rounded-full bg-gray-600 transition-all" id="dot-2"></div>
@@ -177,67 +171,69 @@
         </nav>
 
         <!-- ==========================================
-             PLAYER VIEW
+             PLAYER VIEW (Fixed Layout & Perfect Fullscreen)
         =========================================== -->
         <div id="player-view" class="hidden pb-10 bg-[#0b0f16] min-h-screen">
             <main>
-                <section class="w-full bg-black relative group" id="video-wrapper">
-                    <div class="relative w-full h-full aspect-video md:max-h-[70vh] bg-black flex items-center justify-center overflow-hidden touch-none" id="gesture-area">
-                        
-                        <video id="mainVideo" class="w-full h-full video-contain pointer-events-auto" playsinline preload="metadata">
-                            <source src="" type="video/mp4">
-                        </video>
+                <!-- Video Section - Uses Flexbox for perfect internal positioning -->
+                <section class="w-full bg-black relative group flex justify-center items-center overflow-hidden" id="video-wrapper" style="aspect-ratio: 16/9; max-height: 75vh; margin: 0 auto;">
+                    
+                    <video id="mainVideo" class="w-full h-full video-contain pointer-events-auto" playsinline preload="metadata">
+                        <source src="" type="video/mp4">
+                    </video>
 
-                        <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none z-10" style="opacity: 0;"></div>
+                    <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none z-10" style="opacity: 0;"></div>
+                    <!-- Fixed: Added gesture-area ID -->
+                    <div id="gesture-area" class="absolute inset-0 z-20 touch-none cursor-pointer"></div>
+                    
+                    <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-6 py-4 rounded-xl text-xl font-bold pointer-events-none tracking-wider flex items-center gap-3 shadow-2xl transition-opacity duration-200">
+                    </div>
+
+                    <!-- UI Controls - Flex Layout ensuring absolute Top and Bottom limits -->
+                    <div id="custom-controls" class="controls-transition active absolute inset-0 w-full h-full z-30 flex flex-col justify-between pointer-events-none">
                         
-                        <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-5 py-3 rounded-xl text-lg font-bold pointer-events-none tracking-wider flex items-center gap-2 shadow-lg transition-opacity duration-200">
+                        <!-- Top Header Bar -->
+                        <div class="w-full flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent pointer-events-auto">
+                            <div class="flex items-center gap-3">
+                                <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition drop-shadow"><i class="fa-solid fa-chevron-left text-xl sm:text-2xl"></i></button>
+                                <span id="player-title-top" class="text-sm sm:text-base font-bold text-white truncate max-w-[200px] md:max-w-[500px] drop-shadow-md">Loading...</span>
+                            </div>
                         </div>
 
-                        <div id="custom-controls" class="controls-transition active absolute inset-0 z-30 pointer-events-none">
+                        <!-- Center Play/Pause -->
+                        <div class="flex-1 flex items-center justify-center pointer-events-none">
+                            <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-24 h-24 flex items-center justify-center drop-shadow-2xl z-50">
+                                <i id="play-pause-icon" class="fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
+                            </button>
+                        </div>
+
+                        <!-- Bottom Controls Bar -->
+                        <div class="w-full bg-gradient-to-t from-black/95 via-black/70 to-transparent pointer-events-auto px-4 pb-4 pt-12 flex flex-col justify-end">
                             
-                            <div class="absolute top-0 left-0 w-full flex items-center justify-between p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-auto">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
-                                    <span id="player-title-top" class="text-xs sm:text-sm font-semibold text-white truncate max-w-[200px] md:max-w-[400px] drop-shadow-md">Loading...</span>
+                            <!-- Progress Bar Row -->
+                            <div class="flex items-center gap-3 w-full mb-3 z-50">
+                                <span id="current-time" class="text-xs sm:text-sm text-white/90 font-medium w-12 text-right">00:00</span>
+                                <input type="range" id="progress-bar" value="0" step="0.1" class="flex-1 cursor-pointer">
+                                <span id="duration-time" class="text-xs sm:text-sm text-white/90 font-medium w-12">00:00</span>
+                            </div>
+                            
+                            <!-- Toolbar Row -->
+                            <div class="flex items-center justify-between text-white w-full z-50">
+                                <!-- Left Tools (Play, Skip) -->
+                                <div class="flex items-center gap-4 sm:gap-6">
+                                    <button onclick="togglePlay()" class="hover:text-[#00e6e6] transition text-lg sm:text-xl"><i id="bottom-play-icon" class="fa-solid fa-play"></i></button>
+                                    <button onclick="skipVideo(-10)" class="hover:text-[#00e6e6] transition text-lg sm:text-xl" title="Rewind 10s"><i class="fa-solid fa-rotate-left"></i></button>
+                                    <button onclick="skipVideo(10)" class="hover:text-[#00e6e6] transition text-lg sm:text-xl" title="Forward 10s"><i class="fa-solid fa-rotate-right"></i></button>
+                                </div>
+                                
+                                <!-- Right Tools (Stretch, PiP, Fullscreen) -->
+                                <div class="flex items-center gap-4 sm:gap-6 text-lg sm:text-xl">
+                                    <button onclick="toggleStretch()" class="hover:text-[#00e6e6] transition drop-shadow" title="Stretch / Fit"><i class="fa-solid fa-crop-simple"></i></button>
+                                    <button onclick="togglePiP()" class="hover:text-[#00e6e6] transition drop-shadow" title="Picture in Picture"><i class="fa-solid fa-clone"></i></button>
+                                    <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] transition drop-shadow" title="Fullscreen"><i id="fullscreen-icon" class="fa-solid fa-expand"></i></button>
                                 </div>
                             </div>
 
-                            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-20 h-20 flex items-center justify-center drop-shadow-2xl z-50">
-                                    <i id="play-pause-icon" class="fa-solid fa-play text-5xl md:text-6xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
-                                </button>
-                            </div>
-
-                            <div class="absolute bottom-0 left-0 w-full px-3 pb-3 pt-12 sm:pt-16 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-auto flex flex-col justify-end">
-                                
-                                <div class="flex items-center justify-between text-[11px] md:text-xs text-white/90 font-medium mb-1 tracking-wide drop-shadow">
-                                    <span id="current-time">00:00</span>
-                                    <span id="duration-time">00:00</span>
-                                </div>
-                                
-                                <div class="w-full relative z-50 mb-2">
-                                    <input type="range" id="progress-bar" value="0" step="0.1" class="w-full">
-                                </div>
-                                
-                                <div class="flex items-center justify-between text-white w-full">
-                                    <button onclick="togglePlay()" class="p-2 hover:text-[#00e6e6] transition z-50">
-                                        <i id="bottom-play-icon" class="fa-solid fa-play text-lg drop-shadow"></i>
-                                    </button>
-                                    
-                                    <div class="flex items-center gap-2 md:gap-4 text-[11px] md:text-sm font-semibold z-50">
-                                        <button onclick="toggleStretch()" class="p-2 flex items-center gap-1 hover:text-[#00e6e6] transition drop-shadow">
-                                            <i class="fa-solid fa-crop-simple"></i> <span id="stretch-text" class="hidden sm:inline">Stretch</span>
-                                        </button>
-                                        <button onclick="togglePiP()" class="p-2 hover:text-[#00e6e6] transition drop-shadow flex items-center justify-center" title="Picture in Picture">
-                                            <i class="fa-solid fa-clone text-sm"></i>
-                                        </button>
-                                        <button onclick="toggleFullscreen()" class="p-2 hover:text-[#00e6e6] transition drop-shadow">
-                                            <i id="fullscreen-icon" class="fa-solid fa-expand text-lg md:text-xl drop-shadow"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </div>
                         </div>
                     </div>
                 </section>
@@ -350,13 +346,12 @@
         const controlsOverlay = document.getElementById('custom-controls');
         const heroCarousel = document.getElementById('hero-carousel');
         
-        // --- NEW AUTO SLIDER LOGIC ---
         let slideInterval;
         let currentSlide = 0;
         const totalSlides = 2; 
 
         function startAutoSlide() {
-            clearInterval(slideInterval); // Clear old interval
+            clearInterval(slideInterval); 
             slideInterval = setInterval(() => {
                 currentSlide++;
                 if(currentSlide >= totalSlides) currentSlide = 0;
@@ -365,16 +360,14 @@
                     left: heroCarousel.clientWidth * currentSlide,
                     behavior: 'smooth'
                 });
-            }, 3500); // 3.5 seconds
+            }, 3500); 
         }
 
-        // Pause auto-slide on hover/touch
         heroCarousel.addEventListener('touchstart', () => clearInterval(slideInterval), {passive: true});
         heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
         heroCarousel.addEventListener('touchend', startAutoSlide);
         heroCarousel.addEventListener('mouseleave', startAutoSlide);
 
-        // Update Dots on scroll
         const dot1 = document.getElementById('dot-1');
         const dot2 = document.getElementById('dot-2');
 
@@ -395,7 +388,6 @@
             }
         });
 
-        // Navigation
         function switchTab(viewId) {
             ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
@@ -448,7 +440,7 @@
                 else movieContainer.innerHTML += cardHTML;
             });
             loadDownloads();
-            startAutoSlide(); // Trigger auto slide on load
+            startAutoSlide(); 
         }
 
         function openPlayer(id, fromView = 'home-view') {
@@ -496,6 +488,12 @@
             }
             let epText = currentActiveItem.type === 'series' ? ` E${currentActiveItem.episodes[index].epNum}` : "";
             document.getElementById('player-title-top').innerText = `${currentActiveItem.title}${epText}`;
+        }
+
+        // --- Skip Features ---
+        function skipVideo(seconds) {
+            video.currentTime += seconds;
+            showPersistentIndicator(seconds > 0 ? '<i class="fa-solid fa-rotate-right"></i>' : '<i class="fa-solid fa-rotate-left"></i>', `${seconds > 0 ? '+10s' : '-10s'}`);
         }
 
         function startDownload() {
@@ -575,7 +573,7 @@
 
         function togglePlay() { video.paused ? video.play() : video.pause(); updatePlayPauseUI(!video.paused); }
         function updatePlayPauseUI(isPlaying) {
-            document.getElementById('play-pause-icon').className = isPlaying ? "fa-solid fa-pause text-5xl md:text-6xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]" : "fa-solid fa-play text-5xl md:text-6xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]";
+            document.getElementById('play-pause-icon').className = isPlaying ? "fa-solid fa-pause text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]" : "fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]";
             document.getElementById('bottom-play-icon').className = isPlaying ? "fa-solid fa-pause text-lg drop-shadow" : "fa-solid fa-play text-lg drop-shadow";
         }
         function toggleStretch() {
