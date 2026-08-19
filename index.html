@@ -21,6 +21,7 @@
             user-select: none;
         }
         
+        /* App Container */
         .app-container {
             width: 100%; max-width: 450px; margin: 0 auto;
             background-color: #0b0f16; min-height: 100vh;
@@ -29,11 +30,15 @@
             overflow-x: hidden;
         }
 
+        /* Fullscreen Video Fixes */
         :fullscreen .app-container, :-webkit-full-screen .app-container {
-            max-width: none; border: none; width: 100vw; height: 100vh; overflow: hidden;
+            max-width: 100%; border: none; width: 100vw; height: 100vh; overflow: hidden; margin: 0; padding: 0;
         }
         :fullscreen #video-wrapper, :-webkit-full-screen #video-wrapper {
-            width: 100vw !important; height: 100vh !important; aspect-ratio: auto;
+            width: 100vw !important; height: 100vh !important; max-width: 100% !important; border-radius: 0 !important;
+        }
+        :fullscreen #mainVideo, :-webkit-full-screen #mainVideo {
+            width: 100%; height: 100%;
         }
 
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 0; padding: 0; pointer-events: auto; }
@@ -46,12 +51,11 @@
         }
         
         .controls-transition { transition: opacity 0.3s ease; pointer-events: none; }
-        .controls-transition.active { pointer-events: auto; } /* Added to fix pointer events */
+        .controls-transition.active { pointer-events: auto; }
         .video-contain { object-fit: contain; }
         .video-cover { object-fit: cover; }
         .nav-active { color: #22c55e !important; }
 
-        /* Snap scrolling for hero banner */
         .snap-x { scroll-snap-type: x mandatory; }
         .snap-center { scroll-snap-align: center; }
     </style>
@@ -87,7 +91,7 @@
                 <section class="mt-2 w-full overflow-hidden">
                     <div class="flex overflow-x-auto snap-x no-scrollbar" id="hero-carousel">
                         
-                        <!-- Hero Item 1: Mad Concrete Dreams -->
+                        <!-- Hero Item 1 -->
                         <div class="relative w-full shrink-0 snap-center aspect-[4/3] cursor-pointer" onclick="openPlayer(5)">
                             <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
@@ -101,7 +105,7 @@
                             </div>
                         </div>
 
-                        <!-- Hero Item 2: The Legend of Kitchen Soldier -->
+                        <!-- Hero Item 2 -->
                         <div class="relative w-full shrink-0 snap-center aspect-[4/3] cursor-pointer" onclick="openPlayer(6)">
                             <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
@@ -116,7 +120,6 @@
                         </div>
 
                     </div>
-                    <!-- Carousel Indicators -->
                     <div class="flex justify-center gap-1 mt-2">
                         <div class="w-3 h-1 rounded-full bg-white transition-all" id="dot-1"></div>
                         <div class="w-1.5 h-1 rounded-full bg-gray-600 transition-all" id="dot-2"></div>
@@ -151,14 +154,13 @@
         </div>
 
         <!-- ==========================================
-             BOTTOM NAVIGATION (No Premium)
+             BOTTOM NAVIGATION
         =========================================== -->
         <nav class="fixed bottom-0 w-full max-w-[450px] bg-[#111620]/95 backdrop-blur-lg border-t border-gray-800 flex justify-around py-3 px-2 z-50">
             <a href="#" onclick="switchTab('home-view')" id="nav-home" class="nav-active flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition">
                 <i class="fa-solid fa-house text-xl"></i>
                 <span class="text-[10px] font-medium">Home</span>
             </a>
-            <!-- Removed Premium Option -->
             <a href="#" onclick="switchTab('downloads-view')" id="nav-downloads" class="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition">
                 <i class="fa-solid fa-arrow-down-to-bracket text-xl relative">
                     <span id="dl-badge" class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-[8px] font-bold px-1 rounded-full animate-bounce">New</span>
@@ -168,12 +170,12 @@
         </nav>
 
         <!-- ==========================================
-             PLAYER VIEW (Fixed Pointer Events)
+             PLAYER VIEW
         =========================================== -->
         <div id="player-view" class="hidden pb-10 bg-[#0b0f16] min-h-screen">
             <main>
+                <!-- Video Section (Z-index fixed for gestures) -->
                 <section class="w-full bg-black relative group" id="video-wrapper">
-                    <!-- Fixed: Added touch-action: none to prevent scrolling while swiping -->
                     <div class="relative w-full h-full aspect-video bg-black flex items-center justify-center overflow-hidden touch-none" id="gesture-area">
                         
                         <video id="mainVideo" class="w-full h-full video-contain pointer-events-auto" playsinline preload="metadata">
@@ -181,43 +183,61 @@
                         </video>
 
                         <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none" style="opacity: 0;"></div>
-                        <!-- Removed full covering z-10 touch-none layer as it blocked video clicks. 
-                             Gesture area is now the parent container -->
 
                         <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-5 py-3 rounded-xl text-lg font-bold pointer-events-none tracking-wider flex items-center gap-2 shadow-lg transition-opacity duration-200">
                         </div>
 
-                        <!-- UI Controls: Added active class toggling for pointer events -->
+                        <!-- UI Controls - Fixed Bottom Bar Overlap -->
                         <div id="custom-controls" class="controls-transition active absolute inset-0 z-30 flex flex-col justify-between">
-                            <div class="flex items-center justify-between p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
-                                <div class="flex items-center gap-2">
-                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition z-50"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
-                                    <span id="player-title-top" class="text-xs sm:text-sm font-semibold text-white truncate max-w-[180px] sm:max-w-[250px] drop-shadow-md">Loading...</span>
+                            
+                            <!-- Top Bar -->
+                            <div class="flex items-center justify-between p-3 sm:p-4 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
+                                <div class="flex items-center gap-3">
+                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-1 transition z-50">
+                                        <i class="fa-solid fa-chevron-left text-xl drop-shadow"></i>
+                                    </button>
+                                    <span id="player-title-top" class="text-sm font-semibold text-white truncate max-w-[200px] drop-shadow-md">Loading...</span>
                                 </div>
                             </div>
 
+                            <!-- Center Play -->
                             <div class="flex items-center justify-center h-full relative pointer-events-none">
                                 <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-16 h-16 flex items-center justify-center drop-shadow-2xl z-50">
                                     <i id="play-pause-icon" class="fa-solid fa-play text-5xl opacity-90 hover:opacity-100 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]"></i>
                                 </button>
                             </div>
 
-                            <div class="p-3 pt-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-auto">
+                            <!-- Bottom Bar (Fixed Overlap & Padding) -->
+                            <div class="px-3 pb-2 pt-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-auto">
+                                
                                 <div class="flex items-center justify-between text-[11px] text-white/90 font-medium mb-1 px-1 tracking-wide drop-shadow">
                                     <span id="current-time">00:00</span>
                                     <span id="duration-time">00:00</span>
                                 </div>
-                                <div class="px-1 z-50"><input type="range" id="progress-bar" value="0" step="0.1" class="w-full mb-3"></div>
                                 
-                                <div class="flex items-center justify-between text-white">
-                                    <button onclick="togglePlay()" class="p-1 hover:text-[#00e6e6] transition z-50"><i id="bottom-play-icon" class="fa-solid fa-play text-lg drop-shadow"></i></button>
+                                <div class="px-1 z-50 mb-2">
+                                    <input type="range" id="progress-bar" value="0" step="0.1" class="w-full">
+                                </div>
+                                
+                                <div class="flex items-center justify-between text-white pb-1">
+                                    <button onclick="togglePlay()" class="p-2 -ml-2 hover:text-[#00e6e6] transition z-50">
+                                        <i id="bottom-play-icon" class="fa-solid fa-play text-lg drop-shadow"></i>
+                                    </button>
                                     
-                                    <div class="flex items-center gap-4 text-[10px] sm:text-xs font-semibold z-50">
-                                        <button onclick="toggleStretch()" class="flex items-center gap-1 hover:text-[#00e6e6] transition drop-shadow"><i class="fa-solid fa-crop-simple"></i> <span id="stretch-text">Stretch</span></button>
-                                        <button onclick="togglePiP()" class="hover:text-[#00e6e6] transition drop-shadow p-1 flex items-center justify-center" title="Picture in Picture"><i class="fa-solid fa-clone text-sm"></i></button>
-                                        <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] p-1 transition"><i id="fullscreen-icon" class="fa-solid fa-expand text-lg drop-shadow"></i></button>
+                                    <!-- Reorganized tools to fit smaller screens perfectly -->
+                                    <div class="flex items-center gap-3 sm:gap-4 text-xs font-semibold z-50">
+                                        <button onclick="toggleStretch()" class="hover:text-[#00e6e6] transition drop-shadow p-1">
+                                            <i class="fa-solid fa-crop-simple text-sm sm:text-base"></i> <span id="stretch-text" class="hidden sm:inline">Stretch</span>
+                                        </button>
+                                        <button onclick="togglePiP()" class="hover:text-[#00e6e6] transition drop-shadow p-1" title="Picture in Picture">
+                                            <i class="fa-solid fa-clone text-sm sm:text-base"></i>
+                                        </button>
+                                        <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] p-1 transition">
+                                            <i id="fullscreen-icon" class="fa-solid fa-expand text-lg sm:text-xl drop-shadow"></i>
+                                        </button>
                                     </div>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -228,25 +248,24 @@
                         <h1 id="player-title" class="text-[22px] font-bold mb-1">Title</h1>
                         <div class="flex items-center gap-2 text-xs text-gray-400 font-medium mb-4">
                             <span id="player-kdrama-badge" class="hidden bg-rose-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider">KDRAMA</span>
-                            
                             <span class="text-amber-500"><i class="fa-solid fa-star text-[10px]"></i> <span id="player-rating">0.0</span></span>
                             <span>|</span><span id="player-year">YYYY</span>
                             <span>|</span><span id="player-genre">Category</span>
                         </div>
-                        <p id="player-desc" class="text-xs text-gray-500 mb-4"></p>
+                        <p id="player-desc" class="text-xs text-gray-500 mb-4 line-clamp-2"></p>
                     </div>
 
                     <div class="grid grid-cols-4 gap-2 border-b border-gray-800 pb-5">
-                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-3 rounded-xl text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
                             <i class="fa-solid fa-plus text-sm"></i> Add to list
                         </button>
-                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-3 rounded-xl text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
                             <i class="fa-solid fa-share-nodes text-sm"></i> Share
                         </button>
-                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-2 rounded-lg text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition border border-[#00e6e6]/30">
+                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-3 rounded-xl text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition border border-[#00e6e6]/30">
                             <i class="fa-solid fa-download text-sm"></i> Download
                         </button>
-                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-3 rounded-xl text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
                             <i class="fa-solid fa-file-arrow-down text-sm"></i> View Dls
                         </button>
                     </div>
@@ -286,42 +305,20 @@
                     { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/vA_XnK_Xy0CY7K0H.Aodz4gCi2gegkuQYElkS8ubndDcKrpT2iWjvp0czNBUlvUk7peHDO5mEMn9MIQgpxR2y6YpC40QyEAgL0jSK8609UR_lD5uGou9hLt4gQecdMRMT3GPuBqvGUq39h7gYK5wHYTJOMP6FrW7kGzE7Oozm7pzBKw8ooKE7x7S-eW-09xDJ2CaRb-AlZyO8-6d7p4GL2E2iE3B4myevmHhs0XROvJzt22n7Kq4aTMntn4-QUC-Tb9IrJkMM3pKdjWl3skf63zG0k1ggrgtkHqLg91aLEe1NH-RkAAJ44JF1YhMFabHFi_2TfqcwMNkidBVyDtS9T_-yU8JFkXoRy7PI_MyfizxoNY1jvRcCIQUbFlu9DtzetupsVCw4ALNMNDnZQJW9QX19LuRMTx_GhU8qwQu_TdswDxo10vnaZbY1j5v5TeBJGqc.Ef_DD22CeWHDCQvv7d9Hbw" },
                     { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/jcYmQ8BhMNjEbNXx.zjGi1dLyMz9sfVh7s1f7rMFFjtgnsBaianHHmFd7mClKhKkSoRu61SDaTrpZBuQx4iot7oilnOC_ai9KzUTmD08ntmbiG1qyWeL2eEJMDy_vsZ3Zoppm3g5kKGkrTuwKoTQtLFXBt5VPgZCzpkPntD562sI98rInvBJbDYlNACg6hAda74kdacjdBF6dFO0RDVD0_UZxthZQf8dtjGOr98gj83bSvee0GwYVDrdDWXaE4J8RXSxK_WklUfWrgvSWxizJrUPA5ixJXkHXuQaphv207mLxvBcFGmDmq5kl3xR9SGMya40-c49x1-r_XKAHO5WJNeJ0ZJfSv4Sy13l1hytvw2Rp6qjbo2-vOtnUAsk3vvQ80j4q0Gm5iLbSAHF9-P9PNr307W5Kg6IgUaFxN69Ex49oESZ5BEU5sk_h27urrpk7t30.zgtUEoK-2bZmzvvJG14NWA" },
                     { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/HPNKtT7YwJ9fYcB8.mrwstp2uI95d--Y6NCAUiPvQKlNEb6aBofq26vddCgxnb-qz5y7B82C-wq5jT8IJ2r6LoJokLCO-srSkIJqFlCRqoRzfrE2cYAkys5CQK7L_blXYg4oNHqDyYKVb5Zu_act0dqlzfI2S4wF47pSTVMC5Q1uG8GK2Zp7WJKCIXgV5kBVe8OK4ATX7EDx3E1k1Zoj8SkccLHPReNpM2PFkEvOgE5c93uIF9NwMUgAulzeeqXbUmE1LO8jORPz_NHQs7OQT6qejvs4jP_YMGW5ZCfYiDuSPtudYUQqH3iRGeb8ByIV-LhynKiTfD7LmHRf1fTAS-jD4ddMxMyCAx59XilJ4FSsDy8jIpj-kgbu_HAz6oe3_mZMwkW0uFDfbl-PpkecPh994INytkmG9pAyMgL_ymy6UU1gGSQXxuECVoiQrivWKp2Q.95RDlHv6wHkJx4PMfR5_xA" },
-                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
-                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
+                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/vZMmnfPQylIxg_-B.ZeDHrESPS0eHba0VFvH-sHKne_Vhdsy_vyOv7iWhh2AME7UviY0uCEhWyGzoHmsTNOeZ1xHn_bUIyWjdK9WJrnWSfX8aH6u70LtWuQ1oMS3h-gyUsMAIQfBles6Sbb7GfXDPKSjNzuoIuVQYTkcVpswdeiNWbSNVd4zeozZdi1M37pt6tdVekZCM-_1PcUnJ_ylrOrbHp6BCpX9XIiQHtlNmnIDQg4_NtruR9hZtyb0G6Svp-jR5aJR0A3uaApkJbL_z8ijeh76FsggOTvhlUu2AkHL3CR-BzuciPnC4FaWLUQcxxkXNb_laD4sqlY0zXp_i9J9XhJRokuOfQCJvcLN5Uk66RdlWW844OAJMistp2ksNgkFyUBn6i9LmNtOSdTBZCCvQYYj4ZRPtFiQaoL7A4v4snnK2gVcZ5LrmGSYAUuTlpeI.AOpajhGgTkYfzk22DdiUZA" },
+                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/goCJg7brHAaUHz9p.KYGPlmjh-LPHnD8xdh5xVV3WznXLPvG5Wx5S9uiAbyrmIpUTj9mKD4YYtgldyU6vKYX5qSzupBb7ipVqrsVni_PHCUues-zMIQCNDMEQenF6DJN8TvN8C4Xwrsfd03Cr3hD3iE0Q3eETnkMtC4FCdFt2gXhCTtsZc87odvoE-Oo4C1pt-6nd4IXzi6a7kCFqLW9Apb2ouAxyCaNnOraZcoMijAWSv6z-xhomplJr0Yxfv3keMCzsxO8V4vvZIY-opYelomnA5MmBANXovhN0OL30tJeH6h-MRkydvqiTpPZJ5udKLS1rMXuX9ZR3zzr6R2Ma37tKFi6eN61_7Jmj99049EpJNbXJzelFhhmgCAi7p6yemfBixIdCNgBjkDH9nooWiSxLAOHk3__yJz3KOyDlAdwjN_74JFPF7S0IcYHTKS03U6k.6tNWVnXCiahIuqU1KaQQzw" }
                 ]
             },
             {
                 id: 6,
                 title: "The Legend of Kitchen Soldier", type: "series", isKDrama: true,
                 poster: "https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg",
-                rating: "8.0/10", year: "2026", genre: "Comedy, Drama, Fantasy",
-                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post, where First Sergeant Park Jae Yeong, First Lieutenant Cho Ye Rin and military cook Yun Dong Hyeon are stationed.",
+                rating: "8.0/10", year: "2026", genre: "Comedy, Drama",
+                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post.",
                 episodes: [
                     { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/wWez0Ni-WxYs6XDx.6K2a6ZDuNWi90OpbhS3iOQf5KRuACA9qZ7VtyfwjWt9o5jl4ruYxqrD7KxEtJisodMcvVxvr7L3-THBSGECeVB8gDQ17l1Gtlebhr-f9J2RFE5wP8H-LJaO4ReN5NpWDTlOeY15JnaeB_Zgs4zFm_YROW8JHrY_2YM614aP4l9w7Z5UBHE6c50t5hjdtwUOAwnEyVUlPuB2S7XH0Zb5kkeRvR6mp3gQiJt4GMbzQlaETfaZyLbbFLTEEXeAJRIED5tPKTsWPHDtZfYFK4PGMcSvPAXDT0R4V08yDsuvFDD1SYVbGmgMEcbxmHHbjWW-1o5W-Vb0HAGmg88ryXipVc9epdeMC8Jt3QMRa-6-tZXGQ8vP4fWiWoX27GICxjZDzZfvUAWWr3kaYq1Mq8WSZUI9EruFvunU5XxJzW58sieUb9Q.C4BIOXZ09R6tSkaHl2ytsg" },
-                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/NSvz_-EF752B2LLY.loBbc5U86vCMHdk0S8KUaG-bCK5SavKfxtJgQiD6Ie8k_sh4j2YAFVeJTh6Bw6k9yqSfSNfQ3korWzBbfHttZ4cr9WazpkJ0DlXuysJGRoy1FPjy25MM_U2YUhemaormG2eo_Vma3a8ALGI_UNqjOp2vcOhHtbm6Ga-lcCDBJZcNSOvLHHWAchTRR2eeXem3bRaRD-nOD4Bu83wSfYqhtwx_U6mHSFfW9bGntWA81jHEVB2STVcSHRQLLxRa67CuV4SFO57AslLz33lqphyXuuLXaCNTHtJrcAnkiTy129MFHg-OVPbM012uHO9DyL0njh7be2taGvVrMD8-9qpdDntVzPWvjy9BDaC8tGPt6IENBGZP33NgJ2f87B3Qqx0-0Zax1m5EWMwlv1F05oWB54dk15V9KZfMQJ1AKy2DGeT7848xAsnat8MM.2zmAOYlohT3T099z97zvJA" },
-                    { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/VrrNdBIJL-G3ygXc.7hl9Y81qM7WZJoc5uiI03UxWl7VtVJLSR81zxff6kbwEHDAQDFRcka6wvkmmXUI7DxqFPEjjRA2Gy4WF8QMihayvsU0vXKwyBsibAwKkWyidTAy15KNYGDdKYbZ6oOi6BMF2IChm7H-CKm5PFD8C3NlsprMRmKoC30fzWZX9i5iV5Fe3vKHwQZwTXbIcReVXr_gQkpSJVLa_GTK8fmEuCMi5yrnC3f3OGvTbZCzehZyivIgWqdoq1QlJ-SItHZ3nc0H6uj29tijxJh22naizrvMxZxl8n9hf_Nionm46f0fDOX564H2Hf7AMlVVs92XaRwRDrvP_gVB9Ezogxax61eJjv1gsuTIrGY0_nETgphVGd5o3TS6HS17eUhCfpDtS00dAYoFtenkpgioFRSJnWFMOaMqFCWGW1DNoGFnlu2OPT3pCeUk1EBfS.lOdc7OYIs8vRSGmj-lxR2A" },
-                    { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Fb6qalk1-eV5775S.WphuXXzDW_CferdjoBLs-XMqYO_OQXPA0E_-sOdlc8P42DncyibrhCJcHse40ANto8BI9E6u_tY-jEiDEe1f9pqtwypXsvabYtdsVHtQ8wd0GuteX-uEaIRFJhsmvUZRq1QSgld--4xY0-NAdBn9yh49vIXF3Pa5EtkgVoxAeLA-5zPtUdfND1Zn0Vs6lzEtaAJHENLUiRFTxkZVGeW7AN__2PaMDnL0iRl2aKo6uu7-8cKzR9912zWnROscZ5Kmwxx6RcIjwP_UWfGN2MTBCZlBsGst9iNY03E-mIIGIv4AHhtpp-_NgT_BF4kFIDZiCyD0xPFar0xv6DGaONdZCyacoRzLbqJWDnlPEzBSOJtCqXDN23d0BaOlcQ_kAR2q5JAz6qLDQWwYuoDlwQqPgIeiyvJWGgh13FnsM62UXhc1JpT0imS7VOq12w.9QMfRqzcjnJE55BPM7z2-w" },
-                    { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/sxPui9pQRXFBzDCw.J0Y-BvX9N_71iAmXKFuAnLlCRel41lTmmlYvbSgmejoSz5mk2dKNldoFXSWnNv0sBYcYs6nRQcFDcNaDbvK6fcwhfG49FfPVpuqe35IVsjb7Ws_WGbdiAfX9fp7iLuRCPw4Ll2OUEQEcQnTqeAHE78K2R00LH1E2SlmtZSMXiVcjnvFonQw_Ar5pc8iW_xkH4vaZDAVqUX7EjK_Vs8SwgqpNDCGBKyZROXEdz-KNP6vK87ZwLD8JRq1l1RSFsRf1DmzBIgCkBMY7scRPqTRj1mg2MIhgToerJWfBPsoj1bsnvIVK3MxYOtND6LQMAdaMTByuXnSkYgsZvGEqABPvjuXPBJzYdtUov-9wXVh7Lur8-ANchKchUPycWugC0LzS8echZ_cpAyBRICtfFveGI2gEXpURrZb_nbEUZWLVNF7wFftqdykinjMOtw.P67iqdc373C65Mi4NTAHiw" },
-                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/xFhZfv3JDTms5uPr.NTBPlKdvj8r2naP2hjZo9ZNgvpyy-CIceRs43ns4HbRUlSU7uleJYZDa-Ln-zyKjoNVSL6b5BtLiOPlra4Cz7X1CuvdIwdsJyDbMESSYzKpAFe2D5a7qugF_K43Dm_Rl0eUth1o_RsntNMn8zhQnDhwZ4YF05l-QHMz9Kb_vPd0zYYLinfyKjjRt0TPY7XlQtqY0sZ7thDxKNf-czy6JTnYd8MSswNiVFPgRZLMYoeaRYZsd9tXvWw_kkk0RkSV70fwGCTD2aiRAgqN99rBgM4irZYK5uiRnV-0ibghm1i_d-C_Z-__GUGLou_KImgg1M-h4Q3YU_Fpaf_9Xx1CamCbeEMclINCNhW8HZhI0ev_CBkObZdJPBf_7-caRLCgxIpbLU83BNtbqWlY03K_-lrjVAj0VfD2BBF8VoBikV1vkNvwF3jAXpw0rZA.c6L6BA9y9GckQnP_ynT2gQ" },
-                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/ZQuj21SvRmSUM4F2.p4ZRwHCr808BlJs97s1U6jOCCjNnmd6HEUQrsOx-7ruxHLMWJt48_h9KuZbFHuGrzAfrS97cKXXqE75GGQfrrdinenv9cb2u7iiv6u8qnKHLwZ_hYBTJbKPWiEFeWwfT-eCJv3MUZwgOyLWxZeKrz4zLkxB--1ovHSmMBN9eMMhfEOzR8ZzG1F3XnShRQV8M2IqBNBNKv9M3yZP7lvSVTNEcAs7yEn3gvq11KR5dr204xMSdK-BG7En7a1b-9Pd_b3OJBEvAZsQpbady_cvUwcHd-wn7zW9WLb9Js4InRMfXq7tl_fUjRR52s5O0W09g9NN50ZJIPQlx1_Xvdxt4FGpXC6B4CWw9jvJQLfkwe8LD_SZJdYC0rqUhdukACoLGbmQoEjyY3hbJcKPPAo9G_PRTB6Z4dxAMJevncHFDNdskhMFwt_WtLxvUYg.xwxg-tApIWxT4YIS3Ev1Sg" },
-                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
-                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
-                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
-                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
-                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
+                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/NSvz_-EF752B2LLY.loBbc5U86vCMHdk0S8KUaG-bCK5SavKfxtJgQiD6Ie8k_sh4j2YAFVeJTh6Bw6k9yqSfSNfQ3korWzBbfHttZ4cr9WazpkJ0DlXuysJGRoy1FPjy25MM_U2YUhemaormG2eo_Vma3a8ALGI_UNqjOp2vcOhHtbm6Ga-lcCDBJZcNSOvLHHWAchTRR2eeXem3bRaRD-nOD4Bu83wSfYqhtwx_U6mHSFfW9bGntWA81jHEVB2STVcSHRQLLxRa67CuV4SFO57AslLz33lqphyXuuLXaCNTHtJrcAnkiTy129MFHg-OVPbM012uHO9DyL0njh7be2taGvVrMD8-9qpdDntVzPWvjy9BDaC8tGPt6IENBGZP33NgJ2f87B3Qqx0-0Zax1m5EWMwlv1F05oWB54dk15V9KZfMQJ1AKy2DGeT7848xAsnat8MM.2zmAOYlohT3T099z97zvJA" }
                 ]
-            },
-            {
-                id: 0, title: "The Last Empress", type: "series", isKDrama: true,
-                poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80", 
-                rating: "7.1", year: "2018", genre: "Korea | Drama",
-                episodes: [ { epNum: "01", link: "https://www.w3schools.com/html/mov_bbb.mp4" } ]
-            },
-            {
-                id: 1, title: "Death of Robin Hood", type: "movie", isKDrama: false,
-                poster: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
-                rating: "7.5", year: "2025", genre: "Action | Drama",
-                episodes: [ { epNum: "Movie", link: "https://www.w3schools.com/html/mov_bbb.mp4" } ]
             }
         ];
 
@@ -526,10 +523,50 @@
             video.classList.toggle('video-contain'); video.classList.toggle('video-cover');
             document.getElementById('stretch-text').innerText = video.classList.contains('video-cover') ? "Fit" : "Stretch";
         }
-        function toggleFullscreen() {
+        
+        // --- FIXED FULLSCREEN LOGIC FOR MOBILE LANDSCAPE ---
+        async function toggleFullscreen() {
             const wrapper = document.getElementById('video-wrapper');
-            if (!document.fullscreenElement) wrapper.requestFullscreen(); else document.exitFullscreen();
+            
+            if (!document.fullscreenElement) {
+                // Enter fullscreen
+                if (wrapper.requestFullscreen) {
+                    await wrapper.requestFullscreen();
+                } else if (wrapper.webkitRequestFullscreen) {
+                    await wrapper.webkitRequestFullscreen();
+                }
+                // Try to force landscape orientation if supported by mobile browser
+                if (screen.orientation && screen.orientation.lock) {
+                    try {
+                        await screen.orientation.lock('landscape');
+                    } catch (e) {
+                        console.log("Screen orientation lock failed or not supported.");
+                    }
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                }
+                // Unlock orientation back to normal
+                if (screen.orientation && screen.orientation.unlock) {
+                    screen.orientation.unlock();
+                }
+            }
         }
+
+        // Listen for fullscreen changes to update the icon
+        document.addEventListener('fullscreenchange', () => {
+            const icon = document.getElementById('fullscreen-icon');
+            if (document.fullscreenElement) {
+                icon.className = "fa-solid fa-compress text-lg sm:text-xl drop-shadow";
+            } else {
+                icon.className = "fa-solid fa-expand text-lg sm:text-xl drop-shadow";
+            }
+        });
+
         async function togglePiP() {
             try {
                 if (video !== document.pictureInPictureElement) await video.requestPictureInPicture();
@@ -544,7 +581,7 @@
         }
 
         let controlsTimeout;
-        const gestureArea = document.getElementById('gesture-area'); // Gesture area is now the parent
+        const gestureArea = document.getElementById('gesture-area'); 
         
         function resetControlsTimeout() {
             clearTimeout(controlsTimeout);
@@ -558,9 +595,7 @@
             }
         }
 
-        // --- NEW CLICK/TOUCH LOGIC FOR CONTROLS ---
         gestureArea.addEventListener('click', (e) => {
-            // Ignore clicks if they happened on a button or control inside the overlay
             if (e.target.closest('button') || e.target.closest('input')) return;
             
             if (controlsOverlay.style.opacity === '0' || !controlsOverlay.classList.contains('active')) {
@@ -572,7 +607,6 @@
             }
         });
 
-        // Swipe & Scrub Logic
         let isDragging = false, startX = 0, startY = 0, dragAction = null;
         gestureArea.addEventListener('touchstart', e => {
             if (e.target.closest('button') || e.target.closest('input')) return;
@@ -585,7 +619,7 @@
             const diffX = e.touches[0].clientX - startX;
             if(!dragAction && Math.abs(diffX) > 10) { dragAction = 'seek'; video.pause(); }
             if(dragAction === 'seek') {
-                e.preventDefault(); // Only prevent default if we are scrubbing
+                e.preventDefault(); 
                 video.currentTime += diffX * 0.1;
             }
         }, {passive: false});
