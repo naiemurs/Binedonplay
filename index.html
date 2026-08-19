@@ -21,7 +21,6 @@
             user-select: none;
         }
         
-        /* Updated for PC & Mobile - Changed max-width to 1280px */
         .app-container {
             width: 100%; max-width: 1280px; margin: 0 auto;
             background-color: #0b0f16; min-height: 100vh;
@@ -37,7 +36,6 @@
             width: 100vw !important; height: 100vh !important; aspect-ratio: auto;
         }
 
-        /* Fixed Range Slider */
         input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 0; padding: 0; pointer-events: auto; }
         input[type=range]::-webkit-slider-thumb {
             -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%;
@@ -55,6 +53,9 @@
 
         .snap-x { scroll-snap-type: x mandatory; }
         .snap-center { scroll-snap-align: center; }
+        
+        /* Smooth scrolling for auto slider */
+        #hero-carousel { scroll-behavior: smooth; }
     </style>
 </head>
 <body class="flex justify-center bg-gray-900">
@@ -84,16 +85,16 @@
             </header>
 
             <main>
-                <!-- Hero Banner Carousel - Optimized aspect ratio for PC -->
+                <!-- Hero Banner Carousel - Fixed height for PC and aspect ratio for mobile -->
                 <section class="mt-2 w-full overflow-hidden">
-                    <div class="flex overflow-x-auto snap-x no-scrollbar" id="hero-carousel">
+                    <div class="flex overflow-x-auto snap-x no-scrollbar w-full" id="hero-carousel">
                         
-                        <!-- Hero Item 1 -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-[21/9] lg:aspect-[3/1] cursor-pointer" onclick="openPlayer(5)">
+                        <!-- Hero Item 1: Mad Concrete Dreams -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:h-[350px] lg:h-[450px] md:aspect-auto cursor-pointer" onclick="openPlayer(5)">
                             <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md">
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-10">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-10">
                                 <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
                                     <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" class="w-10 h-14 rounded-lg object-cover">
                                     <div class="flex-1"><h4 class="text-sm font-semibold truncate">Mad Concrete Dreams</h4></div>
@@ -102,12 +103,12 @@
                             </div>
                         </div>
 
-                        <!-- Hero Item 2 -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-[21/9] lg:aspect-[3/1] cursor-pointer" onclick="openPlayer(6)">
+                        <!-- Hero Item 2: The Legend of Kitchen Soldier -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:h-[350px] lg:h-[450px] md:aspect-auto cursor-pointer" onclick="openPlayer(6)">
                             <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md">
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-10">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-10">
                                 <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
                                     <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" class="w-10 h-14 rounded-lg object-cover">
                                     <div class="flex-1"><h4 class="text-sm font-semibold truncate">The Legend of Kitchen Soldier</h4></div>
@@ -117,9 +118,10 @@
                         </div>
 
                     </div>
-                    <div class="flex justify-center gap-1 mt-3">
-                        <div class="w-3 h-1 rounded-full bg-white transition-all" id="dot-1"></div>
-                        <div class="w-1.5 h-1 rounded-full bg-gray-600 transition-all" id="dot-2"></div>
+                    <!-- Carousel Indicators -->
+                    <div class="flex justify-center gap-1.5 mt-3">
+                        <div class="w-4 h-1.5 rounded-full bg-white transition-all" id="dot-1"></div>
+                        <div class="w-2 h-1.5 rounded-full bg-gray-600 transition-all" id="dot-2"></div>
                     </div>
                 </section>
 
@@ -151,7 +153,7 @@
         </div>
 
         <!-- ==========================================
-             BOTTOM NAVIGATION (Responsive Width)
+             BOTTOM NAVIGATION
         =========================================== -->
         <nav class="fixed bottom-0 w-full max-w-[1280px] bg-[#111620]/95 backdrop-blur-lg border-t border-gray-800 flex justify-around py-3 px-2 z-50">
             <a href="#" onclick="switchTab('home-view')" id="nav-home" class="nav-active flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition w-full">
@@ -167,44 +169,37 @@
         </nav>
 
         <!-- ==========================================
-             PLAYER VIEW (Fixed Controls Clipping)
+             PLAYER VIEW
         =========================================== -->
         <div id="player-view" class="hidden pb-10 bg-[#0b0f16] min-h-screen">
             <main>
-                <!-- Video Section -->
                 <section class="w-full bg-black relative group" id="video-wrapper">
-                    <!-- Removed touch-none from CSS to allow normal JS touch handling -->
-                    <div class="relative w-full h-full aspect-video md:max-h-[70vh] bg-black flex items-center justify-center overflow-hidden" id="gesture-area">
+                    <div class="relative w-full h-full aspect-video md:max-h-[70vh] bg-black flex items-center justify-center overflow-hidden touch-none" id="gesture-area">
                         
-                        <video id="mainVideo" class="w-full h-full video-contain" playsinline preload="metadata">
+                        <video id="mainVideo" class="w-full h-full video-contain pointer-events-auto" playsinline preload="metadata">
                             <source src="" type="video/mp4">
                         </video>
 
-                        <!-- Overlays -->
                         <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none z-10" style="opacity: 0;"></div>
                         
                         <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-5 py-3 rounded-xl text-lg font-bold pointer-events-none tracking-wider flex items-center gap-2 shadow-lg transition-opacity duration-200">
                         </div>
 
-                        <!-- UI Controls - Fixed with Explicit Absolute Positioning -->
                         <div id="custom-controls" class="controls-transition active absolute inset-0 z-30 pointer-events-none">
                             
-                            <!-- Top Bar -->
                             <div class="absolute top-0 left-0 w-full flex items-center justify-between p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-auto">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
+                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition z-50"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
                                     <span id="player-title-top" class="text-xs sm:text-sm font-semibold text-white truncate max-w-[200px] md:max-w-[400px] drop-shadow-md">Loading...</span>
                                 </div>
                             </div>
 
-                            <!-- Center Play Button -->
                             <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                                <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-20 h-20 flex items-center justify-center drop-shadow-2xl">
+                                <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-20 h-20 flex items-center justify-center drop-shadow-2xl z-50">
                                     <i id="play-pause-icon" class="fa-solid fa-play text-5xl md:text-6xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
                                 </button>
                             </div>
 
-                            <!-- Bottom Bar - Fixed padding to ensure nothing is clipped -->
                             <div class="absolute bottom-0 left-0 w-full px-3 pb-3 pt-12 sm:pt-16 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-auto flex flex-col justify-end">
                                 
                                 <div class="flex items-center justify-between text-[11px] md:text-xs text-white/90 font-medium mb-1 tracking-wide drop-shadow">
@@ -344,24 +339,50 @@
         const video = document.getElementById('mainVideo');
         const actionIndicator = document.getElementById('action-indicator');
         const controlsOverlay = document.getElementById('custom-controls');
-
-        // Carousel Indicators Logic
         const heroCarousel = document.getElementById('hero-carousel');
+        
+        // Auto Slider Logic for Hero Carousel
+        let slideInterval;
+        let currentSlide = 0;
+        const totalSlides = 2; // We have 2 slides
+
+        function startAutoSlide() {
+            slideInterval = setInterval(() => {
+                currentSlide = (currentSlide + 1) % totalSlides;
+                heroCarousel.scrollTo({
+                    left: heroCarousel.offsetWidth * currentSlide,
+                    behavior: 'smooth'
+                });
+            }, 4000); // Slides every 4 seconds
+        }
+
+        // Pause auto-slide when user interacts
+        heroCarousel.addEventListener('touchstart', () => clearInterval(slideInterval), {passive: true});
+        heroCarousel.addEventListener('mousedown', () => clearInterval(slideInterval));
+        heroCarousel.addEventListener('touchend', startAutoSlide);
+        heroCarousel.addEventListener('mouseup', startAutoSlide);
+
+        // Update Dots on Scroll
         const dot1 = document.getElementById('dot-1');
         const dot2 = document.getElementById('dot-2');
 
         heroCarousel.addEventListener('scroll', () => {
             const scrollPos = heroCarousel.scrollLeft;
             const itemWidth = heroCarousel.offsetWidth;
-            if (scrollPos < itemWidth / 2) {
-                dot1.classList.replace('w-1.5', 'w-3'); dot1.classList.replace('bg-gray-600', 'bg-white');
-                dot2.classList.replace('w-3', 'w-1.5'); dot2.classList.replace('bg-white', 'bg-gray-600');
+            
+            // Calculate which slide is currently more visible
+            currentSlide = Math.round(scrollPos / itemWidth);
+            
+            if (currentSlide === 0) {
+                dot1.classList.replace('w-2', 'w-4'); dot1.classList.replace('bg-gray-600', 'bg-white');
+                dot2.classList.replace('w-4', 'w-2'); dot2.classList.replace('bg-white', 'bg-gray-600');
             } else {
-                dot2.classList.replace('w-1.5', 'w-3'); dot2.classList.replace('bg-gray-600', 'bg-white');
-                dot1.classList.replace('w-3', 'w-1.5'); dot1.classList.replace('bg-white', 'bg-gray-600');
+                dot2.classList.replace('w-2', 'w-4'); dot2.classList.replace('bg-gray-600', 'bg-white');
+                dot1.classList.replace('w-4', 'w-2'); dot1.classList.replace('bg-white', 'bg-gray-600');
             }
         });
 
+        // Navigation
         function switchTab(viewId) {
             ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
@@ -370,7 +391,13 @@
             document.getElementById('nav-home').classList.remove('nav-active');
             document.getElementById('nav-downloads').classList.remove('nav-active');
             
-            if(viewId === 'home-view') document.getElementById('nav-home').classList.add('nav-active');
+            if(viewId === 'home-view') {
+                document.getElementById('nav-home').classList.add('nav-active');
+                startAutoSlide(); // Resume slider when returning to home
+            } else {
+                clearInterval(slideInterval); // Pause slider when not on home
+            }
+
             if(viewId === 'downloads-view') {
                 document.getElementById('nav-downloads').classList.add('nav-active');
                 document.getElementById('dl-badge').classList.add('hidden');
@@ -385,6 +412,7 @@
             switchTab(previousView);
         }
 
+        // Render Homepage
         function renderContent() {
             const movieContainer = document.getElementById('movie-list-container');
             const seriesContainer = document.getElementById('series-list-container');
@@ -408,8 +436,10 @@
                 else movieContainer.innerHTML += cardHTML;
             });
             loadDownloads();
+            startAutoSlide(); // Start the hero carousel slider
         }
 
+        // Setup Player
         function openPlayer(id, fromView = 'home-view') {
             previousView = fromView;
             currentActiveItem = contentData.find(item => item.id === id);
