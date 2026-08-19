@@ -85,16 +85,20 @@
             </header>
 
             <main>
-                <!-- Hero Banner Carousel - Fixed height for PC and aspect ratio for mobile -->
+                <!-- Hero Banner Carousel - Cinematic PC Fix & Auto Slide -->
                 <section class="mt-2 w-full overflow-hidden">
                     <div class="flex overflow-x-auto snap-x no-scrollbar w-full" id="hero-carousel">
                         
                         <!-- Hero Item 1: Mad Concrete Dreams -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:h-[350px] lg:h-[450px] md:aspect-auto cursor-pointer" onclick="openPlayer(5)">
-                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-10">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-10">
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(5)">
+                            <!-- Background Blur for PC -->
+                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
+                            <!-- Main Sharp Image (Contained) -->
+                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
                                 <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
                                     <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" class="w-10 h-14 rounded-lg object-cover">
                                     <div class="flex-1"><h4 class="text-sm font-semibold truncate">Mad Concrete Dreams</h4></div>
@@ -104,11 +108,15 @@
                         </div>
 
                         <!-- Hero Item 2: The Legend of Kitchen Soldier -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:h-[350px] lg:h-[450px] md:aspect-auto cursor-pointer" onclick="openPlayer(6)">
-                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="w-full h-full object-cover">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-10">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-10">
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(6)">
+                            <!-- Background Blur for PC -->
+                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
+                            <!-- Main Sharp Image (Contained) -->
+                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
                                 <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
                                     <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" class="w-10 h-14 rounded-lg object-cover">
                                     <div class="flex-1"><h4 class="text-sm font-semibold truncate">The Legend of Kitchen Soldier</h4></div>
@@ -189,7 +197,7 @@
                             
                             <div class="absolute top-0 left-0 w-full flex items-center justify-between p-3 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-auto">
                                 <div class="flex items-center gap-2">
-                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition z-50"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
+                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
                                     <span id="player-title-top" class="text-xs sm:text-sm font-semibold text-white truncate max-w-[200px] md:max-w-[400px] drop-shadow-md">Loading...</span>
                                 </div>
                             </div>
@@ -278,6 +286,7 @@
          JAVASCRIPT DATA & LOGIC
     =========================================== -->
     <script>
+        // Database
         const contentData = [
             {
                 id: 5,
@@ -293,11 +302,11 @@
                     { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/EdiwBoqHrvLv9qkP._6zxRFx_melN6WkKjqfp2JnyhJZGoqzhTjIHxIc8erH12mAiPR0Det3AP1WJFgB1H3aChPp5M_DQyN_ZcyC64byeBXkSqiFtTSMABPvfh0_8_jLX0pCsxm_IU6ZlgdPqFydms6r5eq3P24_qO0a0vuzAZdbJ09lc_LeRzCiQO4nRLqnbMvw_-f0TIYAlqWfT7xqttWad1OYGukURRsA0vkXCIAX9ZjeTifgKuyHHad2Y5q9Emt0f6QOhlUOuYgO_C2ZmHaogemL3fWbbm7N0bhivhNhmMIJkpTI7-frV-d26E6cUW8ek9M7eeDDqMln2pgdRuLLjkqXR3yxwlos7JZKZRsN7xin1VhotPZCumLtg8cGwlzt1ibuDHzWSsox6zyoTzdQwreGqCYIZ1XKShJcmD0QB9SRq7e5ojAAbOtmjHr59mt4.WljctO5a7O8gqbFE6emwgw" },
                     { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/uWmC--D4BSNAI00d.m4F6giFHmNceKJKC3MtZJwcZ-lZsE6a_I9LEIWq_PFRqzY37kI6o4Q9tPnj6FR0PJ5ISdGaDWU7MLMxAKeCZFAY9krdqM9yD2zk0zDhc4Q1AwMddhtptXMXII4CIQEyf-v579eQW4_RfkxtWckPJsMGT2Evt2ugCcks8I6Q5gEtarBxfmFc-jabo9jsW7XZ2IoRB7hdJZKX97WNMtxvtMD4JpJ3e6IAiB1xH1bUNxVKw0rWo7jm-MoB0wctPx3wZuPFeFV8EsyKUSiWql0iJ0pmb69BBlz2KkPF-rPrahmAXsLaYoQ7DsEIAYm4ONurVcmrWDqpWIUKlomN1UMz7vSFlyLheUErYORXrdNbSl_ZL_23o6HbQVUaaIXzYHlHX5qbxkkDEQfFGntaEmDWgKqSVs0OZ9_DZloCf2TpTJxUhZYiTypk.sPupGktuRu-7uPDvOyh0DQ" },
                     { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/yWZDeRKRu6d0N3ju.mxyW4BdRiJoYsVrAK7Pmo5l4rvxGz24QR2RRL5Ap_UiBJVjXpn9AT6BTTYS_r0ipB8kjZpj-LaK0eyRpD0fRoT21WJ0RX2IniWwhMatvhGJDoBRpzok6uVAMnZvcP8InxWLcyUmc2dVz9lKaMiC3ri_8KCU7k5MlLAeT7VjYoNYFjft1fjRX7kW_AhY3zdH1u4WQxzQShrUvgPtmE6o1-R_5IO80hygwd1xuUmegtWIFO5xb8HaiZtaapa0rv4BfEdq4tchWDMRCZzo2Zlw7T00nNRcyxQlflu_Gu_SRkxr6lULPU09gHnBbrIJIj6UyC8SNDzUg869s-zY6vNinU5gnvBkAfz08DNrTjr1ZrrwSO_4S5zV-02KFTrWxsULnW3u24pY6S_syQh9O38FfitGDLwsEm2Ne_tT7_9ZEM81TlwB-EPA.C4r8dWqXwpfbJ37ZRL8p4g" },
-                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/vA_XnK_Xy0CY7K0H.Aodz4gCi2gegkuQYElkS8ubndDcKrpT2iWjvp0czNBUlvUk7peHDO5mEMn9MIQgpxR2y6YpC40QyEAgL0jSK8609UR_lD5uGou9hLt4gQecdMRMT3GPuBqvGUq39h7gYK5wHYTJOMP6FrW7kGzE7Oozm7pzBKw8ooKE7x7S-eW-09xDJ2CaRb-AlZyO8-6d7p4GL2E2iE3B4myevmHhs0XROvJzt22n7Kq4aTMntn4-QUC-Tb9IrJkMM3pKdjWl3skf63zG0k1ggrgtkHqLg91aLEe1NH-RkAAJ44JF1YhMFabHFi_2TfqcwMNkidBVyDtS9T_-yU8JFkXoRy7PI_MyfizxoNY1jvRcCIQUbFlu9DtzetupsVCw4ALNMNDnZQJW9QX19LuRMTx_GhU8qwQu_TdswDxo10vnaZbY1j5v5TeBJGqc.Ef_DD22CeWHDCQvv7d9Hbw" },
-                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/jcYmQ8BhMNjEbNXx.zjGi1dLyMz9sfVh7s1f7rMFFjtgnsBaianHHmFd7mClKhKkSoRu61SDaTrpZBuQx4iot7oilnOC_ai9KzUTmD08ntmbiG1qyWeL2eEJMDy_vsZ3Zoppm3g5kKGkrTuwKoTQtLFXBt5VPgZCzpkPntD562sI98rInvBJbDYlNACg6hAda74kdacjdBF6dFO0RDVD0_UZxthZQf8dtjGOr98gj83bSvee0GwYVDrdDWXaE4J8RXSxK_WklUfWrgvSWxizJrUPA5ixJXkHXuQaphv207mLxvBcFGmDmq5kl3xR9SGMya40-c49x1-r_XKAHO5WJNeJ0ZJfSv4Sy13l1hytvw2Rp6qjbo2-vOtnUAsk3vvQ80j4q0Gm5iLbSAHF9-P9PNr307W5Kg6IgUaFxN69Ex49oESZ5BEU5sk_h27urrpk7t30.zgtUEoK-2bZmzvvJG14NWA" },
-                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/HPNKtT7YwJ9fYcB8.mrwstp2uI95d--Y6NCAUiPvQKlNEb6aBofq26vddCgxnb-qz5y7B82C-wq5jT8IJ2r6LoJokLCO-srSkIJqFlCRqoRzfrE2cYAkys5CQK7L_blXYg4oNHqDyYKVb5Zu_act0dqlzfI2S4wF47pSTVMC5Q1uG8GK2Zp7WJKCIXgV5kBVe8OK4ATX7EDx3E1k1Zoj8SkccLHPReNpM2PFkEvOgE5c93uIF9NwMUgAulzeeqXbUmE1LO8jORPz_NHQs7OQT6qejvs4jP_YMGW5ZCfYiDuSPtudYUQqH3iRGeb8ByIV-LhynKiTfD7LmHRf1fTAS-jD4ddMxMyCAx59XilJ4FSsDy8jIpj-kgbu_HAz6oe3_mZMwkW0uFDfbl-PpkecPh994INytkmG9pAyMgL_ymy6UU1gGSQXxuECVoiQrivWKp2Q.95RDlHv6wHkJx4PMfR5_xA" },
+                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
+                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
+                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
                     { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
-                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/goCJg7brHAaUHz9p.KYGPlmjh-LPHnD8xdh5xVV3WznXLPvG5Wx5S9uiAbyrmIpUTj9mKD4YYtgldyU6vKYX5qSzupBb7ipVqrsVni_PHCUues-zMIQCNDMEQenF6DJN8TvN8C4Xwrsfd03Cr3hD3iE0Q3eETnkMtC4FCdFt2gXhCTtsZc87odvoE-Oo4C1pt-6nd4IXzi6a7kCFqLW9Apb2ouAxyCaNnOraZcoMijAWSv6z-xhomplJr0Yxfv3keMCzsxO8V4vvZIY-opYelomnA5MmBANXovhN0OL30tJeH6h-MRkydvqiTpPZJ5udKLS1rMXuX9ZR3zzr6R2Ma37tKFi6eN61_7Jmj99049EpJNbXJzelFhhmgCAi7p6yemfBixIdCNgBjkDH9nooWiSxLAOHk3__yJz3KOyDlAdwjN_74JFPF7S0IcYHTKS03U6k.6tNWVnXCiahIuqU1KaQQzw" }
+                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
                 ]
             },
             {
@@ -312,8 +321,8 @@
                     { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/VrrNdBIJL-G3ygXc.7hl9Y81qM7WZJoc5uiI03UxWl7VtVJLSR81zxff6kbwEHDAQDFRcka6wvkmmXUI7DxqFPEjjRA2Gy4WF8QMihayvsU0vXKwyBsibAwKkWyidTAy15KNYGDdKYbZ6oOi6BMF2IChm7H-CKm5PFD8C3NlsprMRmKoC30fzWZX9i5iV5Fe3vKHwQZwTXbIcReVXr_gQkpSJVLa_GTK8fmEuCMi5yrnC3f3OGvTbZCzehZyivIgWqdoq1QlJ-SItHZ3nc0H6uj29tijxJh22naizrvMxZxl8n9hf_Nionm46f0fDOX564H2Hf7AMlVVs92XaRwRDrvP_gVB9Ezogxax61eJjv1gsuTIrGY0_nETgphVGd5o3TS6HS17eUhCfpDtS00dAYoFtenkpgioFRSJnWFMOaMqFCWGW1DNoGFnlu2OPT3pCeUk1EBfS.lOdc7OYIs8vRSGmj-lxR2A" },
                     { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Fb6qalk1-eV5775S.WphuXXzDW_CferdjoBLs-XMqYO_OQXPA0E_-sOdlc8P42DncyibrhCJcHse40ANto8BI9E6u_tY-jEiDEe1f9pqtwypXsvabYtdsVHtQ8wd0GuteX-uEaIRFJhsmvUZRq1QSgld--4xY0-NAdBn9yh49vIXF3Pa5EtkgVoxAeLA-5zPtUdfND1Zn0Vs6lzEtaAJHENLUiRFTxkZVGeW7AN__2PaMDnL0iRl2aKo6uu7-8cKzR9912zWnROscZ5Kmwxx6RcIjwP_UWfGN2MTBCZlBsGst9iNY03E-mIIGIv4AHhtpp-_NgT_BF4kFIDZiCyD0xPFar0xv6DGaONdZCyacoRzLbqJWDnlPEzBSOJtCqXDN23d0BaOlcQ_kAR2q5JAz6qLDQWwYuoDlwQqPgIeiyvJWGgh13FnsM62UXhc1JpT0imS7VOq12w.9QMfRqzcjnJE55BPM7z2-w" },
                     { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/sxPui9pQRXFBzDCw.J0Y-BvX9N_71iAmXKFuAnLlCRel41lTmmlYvbSgmejoSz5mk2dKNldoFXSWnNv0sBYcYs6nRQcFDcNaDbvK6fcwhfG49FfPVpuqe35IVsjb7Ws_WGbdiAfX9fp7iLuRCPw4Ll2OUEQEcQnTqeAHE78K2R00LH1E2SlmtZSMXiVcjnvFonQw_Ar5pc8iW_xkH4vaZDAVqUX7EjK_Vs8SwgqpNDCGBKyZROXEdz-KNP6vK87ZwLD8JRq1l1RSFsRf1DmzBIgCkBMY7scRPqTRj1mg2MIhgToerJWfBPsoj1bsnvIVK3MxYOtND6LQMAdaMTByuXnSkYgsZvGEqABPvjuXPBJzYdtUov-9wXVh7Lur8-ANchKchUPycWugC0LzS8echZ_cpAyBRICtfFveGI2gEXpURrZb_nbEUZWLVNF7wFftqdykinjMOtw.P67iqdc373C65Mi4NTAHiw" },
-                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/xFhZfv3JDTms5uPr.NTBPlKdvj8r2naP2hjZo9ZNgvpyy-CIceRs43ns4HbRUlSU7uleJYZDa-Ln-zyKjoNVSL6b5BtLiOPlra4Cz7X1CuvdIwdsJyDbMESSYzKpAFe2D5a7qugF_K43Dm_Rl0eUth1o_RsntNMn8zhQnDhwZ4YF05l-QHMz9Kb_vPd0zYYLinfyKjjRt0TPY7XlQtqY0sZ7thDxKNf-czy6JTnYd8MSswNiVFPgRZLMYoeaRYZsd9tXvWw_kkk0RkSV70fwGCTD2aiRAgqN99rBgM4irZYK5uiRnV-0ibghm1i_d-C_Z-__GUGLou_KImgg1M-h4Q3YU_Fpaf_9Xx1CamCbeEMclINCNhW8HZhI0ev_CBkObZdJPBf_7-caRLCgxIpbLU83BNtbqWlY03K_-lrjVAj0VfD2BBF8VoBikV1vkNvwF3jAXpw0rZA.c6L6BA9y9GckQnP_ynT2gQ" },
-                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/ZQuj21SvRmSUM4F2.p4ZRwHCr808BlJs97s1U6jOCCjNnmd6HEUQrsOx-7ruxHLMWJt48_h9KuZbFHuGrzAfrS97cKXXqE75GGQfrrdinenv9cb2u7iiv6u8qnKHLwZ_hYBTJbKPWiEFeWwfT-eCJv3MUZwgOyLWxZeKrz4zLkxB--1ovHSmMBN9eMMhfEOzR8ZzG1F3XnShRQV8M2IqBNBNKv9M3yZP7lvSVTNEcAs7yEn3gvq11KR5dr204xMSdK-BG7En7a1b-9Pd_b3OJBEvAZsQpbady_cvUwcHd-wn7zW9WLb9Js4InRMfXq7tl_fUjRR52s5O0W09g9NN50ZJIPQlx1_Xvdxt4FGpXC6B4CWw9jvJQLfkwe8LD_SZJdYC0rqUhdukACoLGbmQoEjyY3hbJcKPPAo9G_PRTB6Z4dxAMJevncHFDNdskhMFwt_WtLxvUYg.xwxg-tApIWxT4YIS3Ev1Sg" },
+                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/uWmC--D4BSNAI00d.m4F6giFHmNceKJKC3MtZJwcZ-lZsE6a_I9LEIWq_PFRqzY37kI6o4Q9tPnj6FR0PJ5ISdGaDWU7MLMxAKeCZFAY9krdqM9yD2zk0zDhc4Q1AwMddhtptXMXII4CIQEyf-v579eQW4_RfkxtWckPJsMGT2Evt2ugCcks8I6Q5gEtarBxfmFc-jabo9jsW7XZ2IoRB7hdJZKX97WNMtxvtMD4JpJ3e6IAiB1xH1bUNxVKw0rWo7jm-MoB0wctPx3wZuPFeFV8EsyKUSiWql0iJ0pmb69BBlz2KkPF-rPrahmAXsLaYoQ7DsEIAYm4ONurVcmrWDqpWIUKlomN1UMz7vSFlyLheUErYORXrdNbSl_ZL_23o6HbQVUaaIXzYHlHX5qbxkkDEQfFGntaEmDWgKqSVs0OZ9_DZloCf2TpTJxUhZYiTypk.sPupGktuRu-7uPDvOyh0DQ" },
+                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/yWZDeRKRu6d0N3ju.mxyW4BdRiJoYsVrAK7Pmo5l4rvxGz24QR2RRL5Ap_UiBJVjXpn9AT6BTTYS_r0ipB8kjZpj-LaK0eyRpD0fRoT21WJ0RX2IniWwhMatvhGJDoBRpzok6uVAMnZvcP8InxWLcyUmc2dVz9lKaMiC3ri_8KCU7k5MlLAeT7VjYoNYFjft1fjRX7kW_AhY3zdH1u4WQxzQShrUvgPtmE6o1-R_5IO80hygwd1xuUmegtWIFO5xb8HaiZtaapa0rv4BfEdq4tchWDMRCZzo2Zlw7T00nNRcyxQlflu_Gu_SRkxr6lULPU09gHnBbrIJIj6UyC8SNDzUg869s-zY6vNinU5gnvBkAfz08DNrTjr1ZrrwSO_4S5zV-02KFTrWxsULnW3u24pY6S_syQh9O38FfitGDLwsEm2Ne_tT7_9ZEM81TlwB-EPA.C4r8dWqXwpfbJ37ZRL8p4g" },
                     { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
                     { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
                     { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
@@ -341,44 +350,48 @@
         const controlsOverlay = document.getElementById('custom-controls');
         const heroCarousel = document.getElementById('hero-carousel');
         
-        // Auto Slider Logic for Hero Carousel
+        // --- NEW AUTO SLIDER LOGIC ---
         let slideInterval;
         let currentSlide = 0;
-        const totalSlides = 2; // We have 2 slides
+        const totalSlides = 2; 
 
         function startAutoSlide() {
+            clearInterval(slideInterval); // Clear old interval
             slideInterval = setInterval(() => {
-                currentSlide = (currentSlide + 1) % totalSlides;
+                currentSlide++;
+                if(currentSlide >= totalSlides) currentSlide = 0;
+                
                 heroCarousel.scrollTo({
-                    left: heroCarousel.offsetWidth * currentSlide,
+                    left: heroCarousel.clientWidth * currentSlide,
                     behavior: 'smooth'
                 });
-            }, 4000); // Slides every 4 seconds
+            }, 3500); // 3.5 seconds
         }
 
-        // Pause auto-slide when user interacts
+        // Pause auto-slide on hover/touch
         heroCarousel.addEventListener('touchstart', () => clearInterval(slideInterval), {passive: true});
-        heroCarousel.addEventListener('mousedown', () => clearInterval(slideInterval));
+        heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
         heroCarousel.addEventListener('touchend', startAutoSlide);
-        heroCarousel.addEventListener('mouseup', startAutoSlide);
+        heroCarousel.addEventListener('mouseleave', startAutoSlide);
 
-        // Update Dots on Scroll
+        // Update Dots on scroll
         const dot1 = document.getElementById('dot-1');
         const dot2 = document.getElementById('dot-2');
 
         heroCarousel.addEventListener('scroll', () => {
             const scrollPos = heroCarousel.scrollLeft;
-            const itemWidth = heroCarousel.offsetWidth;
+            const itemWidth = heroCarousel.clientWidth;
+            const newSlide = Math.round(scrollPos / itemWidth);
             
-            // Calculate which slide is currently more visible
-            currentSlide = Math.round(scrollPos / itemWidth);
-            
-            if (currentSlide === 0) {
-                dot1.classList.replace('w-2', 'w-4'); dot1.classList.replace('bg-gray-600', 'bg-white');
-                dot2.classList.replace('w-4', 'w-2'); dot2.classList.replace('bg-white', 'bg-gray-600');
-            } else {
-                dot2.classList.replace('w-2', 'w-4'); dot2.classList.replace('bg-gray-600', 'bg-white');
-                dot1.classList.replace('w-4', 'w-2'); dot1.classList.replace('bg-white', 'bg-gray-600');
+            if (newSlide >= 0 && newSlide < totalSlides) {
+                currentSlide = newSlide;
+                if (currentSlide === 0) {
+                    dot1.classList.replace('w-2', 'w-4'); dot1.classList.replace('bg-gray-600', 'bg-white');
+                    dot2.classList.replace('w-4', 'w-2'); dot2.classList.replace('bg-white', 'bg-gray-600');
+                } else {
+                    dot2.classList.replace('w-2', 'w-4'); dot2.classList.replace('bg-gray-600', 'bg-white');
+                    dot1.classList.replace('w-4', 'w-2'); dot1.classList.replace('bg-white', 'bg-gray-600');
+                }
             }
         });
 
@@ -393,9 +406,9 @@
             
             if(viewId === 'home-view') {
                 document.getElementById('nav-home').classList.add('nav-active');
-                startAutoSlide(); // Resume slider when returning to home
+                startAutoSlide(); 
             } else {
-                clearInterval(slideInterval); // Pause slider when not on home
+                clearInterval(slideInterval); 
             }
 
             if(viewId === 'downloads-view') {
@@ -412,7 +425,6 @@
             switchTab(previousView);
         }
 
-        // Render Homepage
         function renderContent() {
             const movieContainer = document.getElementById('movie-list-container');
             const seriesContainer = document.getElementById('series-list-container');
@@ -436,10 +448,9 @@
                 else movieContainer.innerHTML += cardHTML;
             });
             loadDownloads();
-            startAutoSlide(); // Start the hero carousel slider
+            startAutoSlide(); // Trigger auto slide on load
         }
 
-        // Setup Player
         function openPlayer(id, fromView = 'home-view') {
             previousView = fromView;
             currentActiveItem = contentData.find(item => item.id === id);
@@ -603,7 +614,6 @@
             }
         }
 
-        // Handle Clicks avoiding UI
         gestureArea.addEventListener('click', (e) => {
             if (e.target.closest('button') || e.target.closest('input')) return;
             if (controlsOverlay.style.opacity === '0' || !controlsOverlay.classList.contains('active')) {
@@ -615,7 +625,6 @@
             }
         });
 
-        // Swipe & Scrub Logic
         let isDragging = false, startX = 0, startY = 0, dragAction = null;
         gestureArea.addEventListener('touchstart', e => {
             if (e.target.closest('button') || e.target.closest('input')) return;
