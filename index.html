@@ -59,7 +59,7 @@
 
         /* Responsive Hero Image Aspect Ratios */
         @media (min-width: 768px) {
-            .hero-aspect { aspect-ratio: 16/9; max-height: 600px; }
+            .hero-aspect { aspect-ratio: 21/9; max-height: 450px; }
             /* Bottom Nav hidden on large screens, shown on left or top instead normally, but kept fixed bottom full width here for simplicity */
         }
         @media (max-width: 767px) {
@@ -427,8 +427,16 @@
         // Start auto sliding on load
         startAutoSlide();
 
-        // --- NAVIGATION ---
-        function switchTab(viewId) {
+        // --- HISTORY API (Hardware Back Button Support) ---
+        window.addEventListener('popstate', (e) => {
+            if (e.state && e.state.view) {
+                internalSwitchView(e.state.view);
+            } else {
+                internalSwitchView('home-view');
+            }
+        });
+
+        function internalSwitchView(viewId) {
             ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
             document.getElementById(viewId).classList.remove('hidden');
             window.scrollTo(0, 0);
@@ -445,10 +453,16 @@
             if(viewId !== 'player-view') { video.pause(); updatePlayPauseUI(false); }
         }
 
+        // --- NAVIGATION ---
+        function switchTab(viewId) {
+            history.pushState({ view: viewId }, '', '#' + viewId.replace('-view', ''));
+            internalSwitchView(viewId);
+        }
+
         function goBack() {
             if (document.fullscreenElement) document.exitFullscreen();
             if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
-            switchTab(previousView);
+            history.back(); // This triggers native back navigation (popstate)
         }
 
         // --- RENDER HOMEPAGE ---
@@ -507,7 +521,8 @@
                 epContainer.classList.add('hidden');
             }
 
-            switchTab('player-view');
+            history.pushState({ view: 'player-view' }, '', '#player');
+            internalSwitchView('player-view');
             playEpisode(0, null);
         }
 
@@ -711,7 +726,10 @@
             return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
         }
 
-        window.onload = renderContent;
+        window.onload = () => {
+            history.replaceState({ view: 'home-view' }, '', '#home');
+            renderContent();
+        };
     </script>
 </body>
 </html>
