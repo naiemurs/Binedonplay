@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Watch your favorite Korean Dramas, Movies, and TV Series online on BinodonPlay.">
+    <meta name="theme-color" content="#0b0f16">
+    <title>BinodonPlay - Streaming Platform</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        body {
+            background-color: #0b0f16; color: #ffffff;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        .app-container {
+            width: 100%; max-width: 450px; margin: 0 auto;
+            background-color: #0b0f16; min-height: 100vh;
+            position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            border-left: 1px solid #1f2937; border-right: 1px solid #1f2937;
+            overflow-x: hidden;
+        }
+
+        :fullscreen .app-container, :-webkit-full-screen .app-container {
+            max-width: none; border: none; width: 100vw; height: 100vh; overflow: hidden;
+        }
+        :fullscreen #video-wrapper, :-webkit-full-screen #video-wrapper {
+            width: 100vw !important; height: 100vh !important; aspect-ratio: auto;
+        }
+
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 0; padding: 0; }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; height: 12px; width: 12px; border-radius: 50%;
+            background: #00e6e6; cursor: pointer; margin-top: -4px; box-shadow: 0 0 5px rgba(0,230,230,0.5);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%; height: 4px; cursor: pointer; background: rgba(255, 255, 255, 0.3); border-radius: 2px;
+        }
+        
+        .controls-transition { transition: opacity 0.3s ease; }
+        .video-contain { object-fit: contain; }
+        .video-cover { object-fit: cover; }
+        .nav-active { color: #22c55e !important; }
+
+        /* Smooth scrolling for hero carousel */
+        .snap-x { scroll-snap-type: x mandatory; scroll-behavior: smooth; }
+        .snap-center { scroll-snap-align: center; }
+    </style>
+</head>
+<body class="flex justify-center bg-gray-900">
+
+    <div class="app-container">
+
+        <!-- ==========================================
+             HOME VIEW
+        =========================================== -->
+        <div id="home-view" class="block pb-20">
+            <header class="pt-4 pb-2 px-4 sticky top-0 bg-[#0b0f16]/95 backdrop-blur-md z-40">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
+                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
+                    </div>
+                    <div class="flex-1 bg-[#1a1f29] rounded-full flex items-center px-4 py-2 border border-gray-800">
+                        <i class="fa-solid fa-magnifying-glass text-gray-500 text-sm mr-2"></i>
+                        <input type="text" placeholder="Search movies, series..." class="bg-transparent border-none outline-none text-sm text-gray-200 w-full placeholder-gray-500">
+                    </div>
+                </div>
+                <nav class="flex items-center gap-5 mt-4 overflow-x-auto no-scrollbar text-[15px] font-medium text-gray-400">
+                    <a href="#" class="text-white font-bold whitespace-nowrap shrink-0 relative pb-1">Trending<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-white rounded-full"></span></a>
+                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">Movie</a>
+                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">TV Series</a>
+                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">Anime</a>
+                </nav>
+            </header>
+
+            <main>
+                <!-- AUTO-SLIDING Hero Banner Carousel -->
+                <section class="mt-2 w-full overflow-hidden">
+                    <div class="flex overflow-x-auto snap-x no-scrollbar w-full" id="hero-carousel">
+                        
+                        <!-- Hero Item 1: Mad Concrete Dreams -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] cursor-pointer" onclick="openPlayer(5)">
+                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3">
+                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
+                                    <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" class="w-10 h-14 rounded-lg object-cover">
+                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">Mad Concrete Dreams</h4></div>
+                                    <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Item 2: The Legend of Kitchen Soldier -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] cursor-pointer" onclick="openPlayer(6)">
+                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="w-full h-full object-cover">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/40 to-transparent"></div>
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3">
+                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
+                                    <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" class="w-10 h-14 rounded-lg object-cover">
+                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">The Legend of Kitchen Soldier</h4></div>
+                                    <div class="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-chevron-right"></i></div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                    <!-- Carousel Indicators (Dots) -->
+                    <div class="flex justify-center gap-1 mt-2">
+                        <div class="w-3 h-1 rounded-full bg-white transition-all" id="dot-0"></div>
+                        <div class="w-1.5 h-1 rounded-full bg-gray-600 transition-all" id="dot-1"></div>
+                    </div>
+                </section>
+
+                <section class="mt-4 pb-2">
+                    <div class="flex items-center justify-between px-4 mb-3">
+                        <h2 class="text-lg font-bold">Trending Movies</h2>
+                    </div>
+                    <div id="movie-list-container" class="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2"></div>
+                </section>
+
+                <section class="mt-4 pb-6">
+                    <div class="flex items-center justify-between px-4 mb-3">
+                        <h2 class="text-lg font-bold">Trending TV Series</h2>
+                    </div>
+                    <div id="series-list-container" class="flex gap-3 px-4 overflow-x-auto no-scrollbar pb-2"></div>
+                </section>
+            </main>
+        </div>
+
+        <!-- ==========================================
+             DOWNLOADS VIEW
+        =========================================== -->
+        <div id="downloads-view" class="hidden pb-20 min-h-screen">
+            <header class="pt-6 pb-4 px-4 sticky top-0 bg-[#0b0f16]/95 backdrop-blur-md z-40 border-b border-gray-800">
+                <h1 class="text-2xl font-bold">My Downloads</h1>
+                <p class="text-xs text-gray-400 mt-1">Watch your saved movies offline</p>
+            </header>
+            <main class="p-4" id="downloaded-items-container"></main>
+        </div>
+
+        <!-- ==========================================
+             BOTTOM NAVIGATION
+        =========================================== -->
+        <nav class="fixed bottom-0 w-full max-w-[450px] bg-[#111620]/95 backdrop-blur-lg border-t border-gray-800 flex justify-around py-3 px-2 z-50">
+            <a href="#" onclick="switchTab('home-view')" id="nav-home" class="nav-active flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition">
+                <i class="fa-solid fa-house text-xl"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 text-gray-500 hover:text-gray-300 transition">
+                <i class="fa-regular fa-gem text-xl"></i>
+                <span class="text-[10px] font-medium">Premium</span>
+            </a>
+            <a href="#" onclick="switchTab('downloads-view')" id="nav-downloads" class="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition">
+                <i class="fa-solid fa-arrow-down-to-bracket text-xl relative">
+                    <span id="dl-badge" class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-[8px] font-bold px-1 rounded-full animate-bounce">New</span>
+                </i>
+                <span class="text-[10px] font-medium">Downloads</span>
+            </a>
+        </nav>
+
+        <!-- ==========================================
+             PLAYER VIEW
+        =========================================== -->
+        <div id="player-view" class="hidden pb-10 bg-[#0b0f16] min-h-screen">
+            <main>
+                <section class="w-full bg-black relative group" id="video-wrapper">
+                    <div class="relative w-full h-full aspect-video bg-black flex items-center justify-center overflow-hidden">
+                        
+                        <video id="mainVideo" class="w-full h-full video-contain" playsinline preload="metadata">
+                            <source src="" type="video/mp4">
+                        </video>
+
+                        <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none" style="opacity: 0;"></div>
+                        <div id="gesture-layer" class="absolute inset-0 z-10 touch-none"></div>
+
+                        <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-5 py-3 rounded-xl text-lg font-bold pointer-events-none tracking-wider flex items-center gap-2 shadow-lg transition-opacity duration-200">
+                        </div>
+
+                        <!-- UI Controls -->
+                        <div id="custom-controls" class="controls-transition absolute inset-0 z-30 flex flex-col justify-between pointer-events-none">
+                            <div class="flex items-center justify-between p-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-auto">
+                                <div class="flex items-center gap-2">
+                                    <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition"><i class="fa-solid fa-chevron-left text-xl drop-shadow"></i></button>
+                                    <span id="player-title-top" class="text-xs sm:text-sm font-semibold text-white truncate max-w-[180px] sm:max-w-[250px] drop-shadow-md">Loading...</span>
+                                </div>
+                            </div>
+
+                            <div class="flex items-center justify-center h-full relative pointer-events-none">
+                                <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-16 h-16 flex items-center justify-center drop-shadow-2xl">
+                                    <i id="play-pause-icon" class="fa-solid fa-play text-5xl opacity-90 hover:opacity-100 drop-shadow-[0_0_10px_rgba(0,0,0,0.8)]"></i>
+                                </button>
+                            </div>
+
+                            <div class="p-3 pt-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-auto">
+                                <div class="flex items-center justify-between text-[11px] text-white/90 font-medium mb-1 px-1 tracking-wide drop-shadow">
+                                    <span id="current-time">00:00</span>
+                                    <span id="duration-time">00:00</span>
+                                </div>
+                                <div class="px-1"><input type="range" id="progress-bar" value="0" step="0.1" class="w-full mb-3"></div>
+                                
+                                <div class="flex items-center justify-between text-white">
+                                    <button onclick="togglePlay()" class="p-1 hover:text-[#00e6e6] transition"><i id="bottom-play-icon" class="fa-solid fa-play text-lg drop-shadow"></i></button>
+                                    
+                                    <div class="flex items-center gap-4 text-[10px] sm:text-xs font-semibold">
+                                        <button onclick="toggleStretch()" class="flex items-center gap-1 hover:text-[#00e6e6] transition drop-shadow"><i class="fa-solid fa-crop-simple"></i> <span id="stretch-text">Stretch</span></button>
+                                        <button onclick="togglePiP()" class="hover:text-[#00e6e6] transition drop-shadow p-1 flex items-center justify-center" title="Picture in Picture"><i class="fa-solid fa-clone text-sm"></i></button>
+                                        <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] p-1 transition"><i id="fullscreen-icon" class="fa-solid fa-expand text-lg drop-shadow"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="p-4" id="info-section">
+                    <div>
+                        <h1 id="player-title" class="text-[22px] font-bold mb-1">Title</h1>
+                        <div class="flex items-center gap-2 text-xs text-gray-400 font-medium mb-4">
+                            <!-- Dynamic KDRAMA Badge here -->
+                            <span id="player-kdrama-badge" class="hidden bg-rose-600 text-white px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider">KDRAMA</span>
+                            
+                            <span class="text-amber-500"><i class="fa-solid fa-star text-[10px]"></i> <span id="player-rating">0.0</span></span>
+                            <span>|</span><span id="player-year">YYYY</span>
+                            <span>|</span><span id="player-genre">Category</span>
+                        </div>
+                        <p id="player-desc" class="text-xs text-gray-500 mb-4"></p>
+                    </div>
+
+                    <div class="grid grid-cols-4 gap-2 border-b border-gray-800 pb-5">
+                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                            <i class="fa-solid fa-plus text-sm"></i> Add to list
+                        </button>
+                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                            <i class="fa-solid fa-share-nodes text-sm"></i> Share
+                        </button>
+                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-2 rounded-lg text-[11px] font-bold flex flex-col items-center justify-center gap-1 transition border border-[#00e6e6]/30">
+                            <i class="fa-solid fa-download text-sm"></i> Download
+                        </button>
+                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 rounded-lg text-[11px] font-medium flex flex-col items-center justify-center gap-1 transition">
+                            <i class="fa-solid fa-file-arrow-down text-sm"></i> View Dls
+                        </button>
+                    </div>
+
+                    <div class="pt-4 pb-2 border-b border-gray-800">
+                        <div class="flex items-center gap-2 mb-3">
+                            <h3 class="font-bold text-lg">Episodes</h3>
+                        </div>
+                        <div id="episodes-container" class="mt-4">
+                            <div id="episodes-list" class="grid grid-cols-5 sm:grid-cols-6 gap-2"></div>
+                        </div>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <!-- ==========================================
+         JAVASCRIPT DATA & LOGIC
+    =========================================== -->
+    <script>
+        // Database
+        const contentData = [
+            // Series 1: Mad Concrete Dreams
+            {
+                id: 5,
+                title: "Mad Concrete Dreams", type: "series",
+                isKDrama: true,
+                poster: "https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg",
+                rating: "8.3/10", year: "2026", genre: "Crime, Drama", seasons: "1 seasons",
+                desc: "A gripping tale of love and crime in a concrete jungle.",
+                episodes: [
+                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/TkiDeUri225cxgCO.oaUSTknUsZxHpQmmmHF1e24BO0o_E2QUUurOf4WN1EWnBXIh47C5zMXUYvWiOGEvP4UIUn12rw9L3dEIMNMIBDZf578njKmhZX7tbrJ9mlx_bAMrZ-XjIBpVlU2igojcwn6GHEo4G0atrSxRQkJCNGeF6R8BOQzhl6EpwD7zqeF7hdAEHzznutaOEsy-j45SKNQA8vM0R7Dvz0_bRNaKZxo6CASqcsFzWR51g8peR1bGkhLNgqnn-w_ilOKExYCJu8_q2VGN7PWBu3g9hsVHsn4RS_1i8V7AdQMuoZQTGC_qjMkOZFN8Co6QFuPjBYnfv22BiLjV6CJmuCAVVe5sjehl0-m4NjlG4y-XvaQiq9yR4kCQ316MRwHP74ywc9zgYGxfZlqYf6x_0asGQrCSboi7VAClWJqVeSGfghI.wA3d38jjwgem9qBcrRlCUg" },
+                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/V8NRAzPKdy-X5xfm.9YmkXisMCrj2kujwu8v270WaVio9_gh9fphWwI9tnVvKDiN8PL79PGgQM_Xmg3P-sQadJXgqPwa0U5zMjA8A8AfApg2MqstKg9xIu8Tc_P46YOy656neyxPwQ-VDJucDrAGWYdENuIW5SS9Eza6rrCkmL-WONX33i_BfXo81GKfwJ7s502uHjOjuAyzgJxRKSzXA31QxqtKvo_ywe3GEnCpV3XbLIrFQJAlx-A6Lg3YvG8i0uHEjgExdAlX5iAStKqjZxqVOyXRX0ItKB-20XVNY1ELcQV_KpShRgwxF0fwhhdE1Rr4Z95VjneNcY_0b9NaiEyF7Zk4qnaP_05ZLvsFQr2wIurVY3BLkChVvFpG79Yy2MLTKnaZH8KiwL7dkX9aQsyB6YbIhBljbXD1pY8TEnTPPgsowrN22pAkzhO4UjGUNsQ.dqQNjLWQSyTYwm7UBaWNGQ" },
+                    { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/XYTCWwCEB-v57WX3.uE-T6reC1RFhxQw_ckF2j1iFgH9dSaXWLAd8YZSBZUSyUa8brp-8HXXpzJlt79TpexBlmj8_SygPS2X4oTIFB1X5UJh9RIWgqDKg9et4dnLkfJZktT0vLUnYKr1ZgZHY0nXzi85F9dxJ1IJDIKX4-w0PGnL-BGXk7VXkraV5KRtLiAvgBXUe-LgzV_Wx6eVQdTPYFZ0Z9Wmrnz8mCZVUxvxhDxFKEfWOitH98S5oBLv58SjgTycMavvrUedRmMvLzzn82pIIvjOmmV_60YgVEKGrTcj3y7eGTQcjhKmJjJy9V3IFC2ZAM4xMyg7aSAwriDqtAQ7z7PNKDzkZZ1BhhfufIVejCdnIxbtS4q1coHgFiGEsXn_ST27GYxB1ojBRc6FMIubDo-SgeqCljm54aR9e_Q-IuYygvrslMc6oRPfu7_nKag.PNRmVyvTpcFZC-rQvOMz5g" },
+                    { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Ea65E1b-xfPdNsAu.7Fd9o3fVPsTHn8qmS2R5dCcmJJhxbeg8sSwK9JoqZnrUHs-k02fZgE-hc7UlsZziDQ__hdgvZVHVBN0Nu3EdsyKT-5my3sY6v2_ZrL1Bsoy9JwXsnpKNHxern1dXPcR6l2nU4k5Qmfzl5567IvlOO2AF8gp4xaGBwWpkIived9M5KlTLC9M_vJz0v7LukN-0JRMxtEoG-I6Hm6SF5wZjr3k6JDHfAI7nU7xk5wuY1K7SAhJbbAGgUP1Mwb-LIBdt42uekc0fC65citkGAT7qK4hKLrTWKS5rKxjuLs5d8GWv_diWpMMF2XJS6td6XgRf3w0UT9tSlcL78lwtWFB-qhjvpVai5ZevlG9NMWcw-t-yq72MLp_he8-vHFIU0kTixi_n3DbqGyXJYH10HfefZz2wQQsdXczBRaDHURksUIS-Xq5dxPk.8WNpv0_aNf75esK0gM1f6Q" },
+                    { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/EdiwBoqHrvLv9qkP._6zxRFx_melN6WkKjqfp2JnyhJZGoqzhTjIHxIc8erH12mAiPR0Det3AP1WJFgB1H3aChPp5M_DQyN_ZcyC64byeBXkSqiFtTSMABPvfh0_8_jLX0pCsxm_IU6ZlgdPqFydms6r5eq3P24_qO0a0vuzAZdbJ09lc_LeRzCiQO4nRLqnbMvw_-f0TIYAlqWfT7xqttWad1OYGukURRsA0vkXCIAX9ZjeTifgKuyHHad2Y5q9Emt0f6QOhlUOuYgO_C2ZmHaogemL3fWbbm7N0bhivhNhmMIJkpTI7-frV-d26E6cUW8ek9M7eeDDqMln2pgdRuLLjkqXR3yxwlos7JZKZRsN7xin1VhotPZCumLtg8cGwlzt1ibuDHzWSsox6zyoTzdQwreGqCYIZ1XKShJcmD0QB9SRq7e5ojAAbOtmjHr59mt4.WljctO5a7O8gqbFE6emwgw" },
+                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/uWmC--D4BSNAI00d.m4F6giFHmNceKJKC3MtZJwcZ-lZsE6a_I9LEIWq_PFRqzY37kI6o4Q9tPnj6FR0PJ5ISdGaDWU7MLMxAKeCZFAY9krdqM9yD2zk0zDhc4Q1AwMddhtptXMXII4CIQEyf-v579eQW4_RfkxtWckPJsMGT2Evt2ugCcks8I6Q5gEtarBxfmFc-jabo9jsW7XZ2IoRB7hdJZKX97WNMtxvtMD4JpJ3e6IAiB1xH1bUNxVKw0rWo7jm-MoB0wctPx3wZuPFeFV8EsyKUSiWql0iJ0pmb69BBlz2KkPF-rPrahmAXsLaYoQ7DsEIAYm4ONurVcmrWDqpWIUKlomN1UMz7vSFlyLheUErYORXrdNbSl_ZL_23o6HbQVUaaIXzYHlHX5qbxkkDEQfFGntaEmDWgKqSVs0OZ9_DZloCf2TpTJxUhZYiTypk.sPupGktuRu-7uPDvOyh0DQ" },
+                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/yWZDeRKRu6d0N3ju.mxyW4BdRiJoYsVrAK7Pmo5l4rvxGz24QR2RRL5Ap_UiBJVjXpn9AT6BTTYS_r0ipB8kjZpj-LaK0eyRpD0fRoT21WJ0RX2IniWwhMatvhGJDoBRpzok6uVAMnZvcP8InxWLcyUmc2dVz9lKaMiC3ri_8KCU7k5MlLAeT7VjYoNYFjft1fjRX7kW_AhY3zdH1u4WQxzQShrUvgPtmE6o1-R_5IO80hygwd1xuUmegtWIFO5xb8HaiZtaapa0rv4BfEdq4tchWDMRCZzo2Zlw7T00nNRcyxQlflu_Gu_SRkxr6lULPU09gHnBbrIJIj6UyC8SNDzUg869s-zY6vNinU5gnvBkAfz08DNrTjr1ZrrwSO_4S5zV-02KFTrWxsULnW3u24pY6S_syQh9O38FfitGDLwsEm2Ne_tT7_9ZEM81TlwB-EPA.C4r8dWqXwpfbJ37ZRL8p4g" },
+                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/vA_XnK_Xy0CY7K0H.Aodz4gCi2gegkuQYElkS8ubndDcKrpT2iWjvp0czNBUlvUk7peHDO5mEMn9MIQgpxR2y6YpC40QyEAgL0jSK8609UR_lD5uGou9hLt4gQecdMRMT3GPuBqvGUq39h7gYK5wHYTJOMP6FrW7kGzE7Oozm7pzBKw8ooKE7x7S-eW-09xDJ2CaRb-AlZyO8-6d7p4GL2E2iE3B4myevmHhs0XROvJzt22n7Kq4aTMntn4-QUC-Tb9IrJkMM3pKdjWl3skf63zG0k1ggrgtkHqLg91aLEe1NH-RkAAJ44JF1YhMFabHFi_2TfqcwMNkidBVyDtS9T_-yU8JFkXoRy7PI_MyfizxoNY1jvRcCIQUbFlu9DtzetupsVCw4ALNMNDnZQJW9QX19LuRMTx_GhU8qwQu_TdswDxo10vnaZbY1j5v5TeBJGqc.Ef_DD22CeWHDCQvv7d9Hbw" },
+                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/jcYmQ8BhMNjEbNXx.zjGi1dLyMz9sfVh7s1f7rMFFjtgnsBaianHHmFd7mClKhKkSoRu61SDaTrpZBuQx4iot7oilnOC_ai9KzUTmD08ntmbiG1qyWeL2eEJMDy_vsZ3Zoppm3g5kKGkrTuwKoTQtLFXBt5VPgZCzpkPntD562sI98rInvBJbDYlNACg6hAda74kdacjdBF6dFO0RDVD0_UZxthZQf8dtjGOr98gj83bSvee0GwYVDrdDWXaE4J8RXSxK_WklUfWrgvSWxizJrUPA5ixJXkHXuQaphv207mLxvBcFGmDmq5kl3xR9SGMya40-c49x1-r_XKAHO5WJNeJ0ZJfSv4Sy13l1hytvw2Rp6qjbo2-vOtnUAsk3vvQ80j4q0Gm5iLbSAHF9-P9PNr307W5Kg6IgUaFxN69Ex49oESZ5BEU5sk_h27urrpk7t30.zgtUEoK-2bZmzvvJG14NWA" },
+                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/HPNKtT7YwJ9fYcB8.mrwstp2uI95d--Y6NCAUiPvQKlNEb6aBofq26vddCgxnb-qz5y7B82C-wq5jT8IJ2r6LoJokLCO-srSkIJqFlCRqoRzfrE2cYAkys5CQK7L_blXYg4oNHqDyYKVb5Zu_act0dqlzfI2S4wF47pSTVMC5Q1uG8GK2Zp7WJKCIXgV5kBVe8OK4ATX7EDx3E1k1Zoj8SkccLHPReNpM2PFkEvOgE5c93uIF9NwMUgAulzeeqXbUmE1LO8jORPz_NHQs7OQT6qejvs4jP_YMGW5ZCfYiDuSPtudYUQqH3iRGeb8ByIV-LhynKiTfD7LmHRf1fTAS-jD4ddMxMyCAx59XilJ4FSsDy8jIpj-kgbu_HAz6oe3_mZMwkW0uFDfbl-PpkecPh994INytkmG9pAyMgL_ymy6UU1gGSQXxuECVoiQrivWKp2Q.95RDlHv6wHkJx4PMfR5_xA" },
+                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/vZMmnfPQylIxg_-B.ZeDHrESPS0eHba0VFvH-sHKne_Vhdsy_vyOv7iWhh2AME7UviY0uCEhWyGzoHmsTNOeZ1xHn_bUIyWjdK9WJrnWSfX8aH6u70LtWuQ1oMS3h-gyUsMAIQfBles6Sbb7GfXDPKSjNzuoIuVQYTkcVpswdeiNWbSNVd4zeozZdi1M37pt6tdVekZCM-_1PcUnJ_ylrOrbHp6BCpX9XIiQHtlNmnIDQg4_NtruR9hZtyb0G6Svp-jR5aJR0A3uaApkJbL_z8ijeh76FsggOTvhlUu2AkHL3CR-BzuciPnC4FaWLUQcxxkXNb_laD4sqlY0zXp_i9J9XhJRokuOfQCJvcLN5Uk66RdlWW844OAJMistp2ksNgkFyUBn6i9LmNtOSdTBZCCvQYYj4ZRPtFiQaoL7A4v4snnK2gVcZ5LrmGSYAUuTlpeI.AOpajhGgTkYfzk22DdiUZA" },
+                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/goCJg7brHAaUHz9p.KYGPlmjh-LPHnD8xdh5xVV3WznXLPvG5Wx5S9uiAbyrmIpUTj9mKD4YYtgldyU6vKYX5qSzupBb7ipVqrsVni_PHCUues-zMIQCNDMEQenF6DJN8TvN8C4Xwrsfd03Cr3hD3iE0Q3eETnkMtC4FCdFt2gXhCTtsZc87odvoE-Oo4C1pt-6nd4IXzi6a7kCFqLW9Apb2ouAxyCaNnOraZcoMijAWSv6z-xhomplJr0Yxfv3keMCzsxO8V4vvZIY-opYelomnA5MmBANXovhN0OL30tJeH6h-MRkydvqiTpPZJ5udKLS1rMXuX9ZR3zzr6R2Ma37tKFi6eN61_7Jmj99049EpJNbXJzelFhhmgCAi7p6yemfBixIdCNgBjkDH9nooWiSxLAOHk3__yJz3KOyDlAdwjN_74JFPF7S0IcYHTKS03U6k.6tNWVnXCiahIuqU1KaQQzw" }
+                ]
+            },
+            // Series 2: The Legend of Kitchen Soldier
+            {
+                id: 6,
+                title: "The Legend of Kitchen Soldier", 
+                type: "series",
+                isKDrama: true,
+                poster: "https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg",
+                rating: "8.0/10", year: "2026", genre: "Comedy, Drama, Fantasy", lang: "Hindi", seasons: "1 seasons",
+                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post, where First Sergeant Park Jae Yeong, First Lieutenant Cho Ye Rin and military cook Yun Dong Hyeon are stationed.",
+                episodes: [
+                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/wWez0Ni-WxYs6XDx.6K2a6ZDuNWi90OpbhS3iOQf5KRuACA9qZ7VtyfwjWt9o5jl4ruYxqrD7KxEtJisodMcvVxvr7L3-THBSGECeVB8gDQ17l1Gtlebhr-f9J2RFE5wP8H-LJaO4ReN5NpWDTlOeY15JnaeB_Zgs4zFm_YROW8JHrY_2YM614aP4l9w7Z5UBHE6c50t5hjdtwUOAwnEyVUlPuB2S7XH0Zb5kkeRvR6mp3gQiJt4GMbzQlaETfaZyLbbFLTEEXeAJRIED5tPKTsWPHDtZfYFK4PGMcSvPAXDT0R4V08yDsuvFDD1SYVbGmgMEcbxmHHbjWW-1o5W-Vb0HAGmg88ryXipVc9epdeMC8Jt3QMRa-6-tZXGQ8vP4fWiWoX27GICxjZDzZfvUAWWr3kaYq1Mq8WSZUI9EruFvunU5XxJzW58sieUb9Q.C4BIOXZ09R6tSkaHl2ytsg" },
+                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/NSvz_-EF752B2LLY.loBbc5U86vCMHdk0S8KUaG-bCK5SavKfxtJgQiD6Ie8k_sh4j2YAFVeJTh6Bw6k9yqSfSNfQ3korWzBbfHttZ4cr9WazpkJ0DlXuysJGRoy1FPjy25MM_U2YUhemaormG2eo_Vma3a8ALGI_UNqjOp2vcOhHtbm6Ga-lcCDBJZcNSOvLHHWAchTRR2eeXem3bRaRD-nOD4Bu83wSfYqhtwx_U6mHSFfW9bGntWA81jHEVB2STVcSHRQLLxRa67CuV4SFO57AslLz33lqphyXuuLXaCNTHtJrcAnkiTy129MFHg-OVPbM012uHO9DyL0njh7be2taGvVrMD8-9qpdDntVzPWvjy9BDaC8tGPt6IENBGZP33NgJ2f87B3Qqx0-0Zax1m5EWMwlv1F05oWB54dk15V9KZfMQJ1AKy2DGeT7848xAsnat8MM.2zmAOYlohT3T099z97zvJA" },
+                    { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/VrrNdBIJL-G3ygXc.7hl9Y81qM7WZJoc5uiI03UxWl7VtVJLSR81zxff6kbwEHDAQDFRcka6wvkmmXUI7DxqFPEjjRA2Gy4WF8QMihayvsU0vXKwyBsibAwKkWyidTAy15KNYGDdKYbZ6oOi6BMF2IChm7H-CKm5PFD8C3NlsprMRmKoC30fzWZX9i5iV5Fe3vKHwQZwTXbIcReVXr_gQkpSJVLa_GTK8fmEuCMi5yrnC3f3OGvTbZCzehZyivIgWqdoq1QlJ-SItHZ3nc0H6uj29tijxJh22naizrvMxZxl8n9hf_Nionm46f0fDOX564H2Hf7AMlVVs92XaRwRDrvP_gVB9Ezogxax61eJjv1gsuTIrGY0_nETgphVGd5o3TS6HS17eUhCfpDtS00dAYoFtenkpgioFRSJnWFMOaMqFCWGW1DNoGFnlu2OPT3pCeUk1EBfS.lOdc7OYIs8vRSGmj-lxR2A" },
+                    { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Fb6qalk1-eV5775S.WphuXXzDW_CferdjoBLs-XMqYO_OQXPA0E_-sOdlc8P42DncyibrhCJcHse40ANto8BI9E6u_tY-jEiDEe1f9pqtwypXsvabYtdsVHtQ8wd0GuteX-uEaIRFJhsmvUZRq1QSgld--4xY0-NAdBn9yh49vIXF3Pa5EtkgVoxAeLA-5zPtUdfND1Zn0Vs6lzEtaAJHENLUiRFTxkZVGeW7AN__2PaMDnL0iRl2aKo6uu7-8cKzR9912zWnROscZ5Kmwxx6RcIjwP_UWfGN2MTBCZlBsGst9iNY03E-mIIGIv4AHhtpp-_NgT_BF4kFIDZiCyD0xPFar0xv6DGaONdZCyacoRzLbqJWDnlPEzBSOJtCqXDN23d0BaOlcQ_kAR2q5JAz6qLDQWwYuoDlwQqPgIeiyvJWGgh13FnsM62UXhc1JpT0imS7VOq12w.9QMfRqzcjnJE55BPM7z2-w" },
+                    { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/sxPui9pQRXFBzDCw.J0Y-BvX9N_71iAmXKFuAnLlCRel41lTmmlYvbSgmejoSz5mk2dKNldoFXSWnNv0sBYcYs6nRQcFDcNaDbvK6fcwhfG49FfPVpuqe35IVsjb7Ws_WGbdiAfX9fp7iLuRCPw4Ll2OUEQEcQnTqeAHE78K2R00LH1E2SlmtZSMXiVcjnvFonQw_Ar5pc8iW_xkH4vaZDAVqUX7EjK_Vs8SwgqpNDCGBKyZROXEdz-KNP6vK87ZwLD8JRq1l1RSFsRf1DmzBIgCkBMY7scRPqTRj1mg2MIhgToerJWfBPsoj1bsnvIVK3MxYOtND6LQMAdaMTByuXnSkYgsZvGEqABPvjuXPBJzYdtUov-9wXVh7Lur8-ANchKchUPycWugC0LzS8echZ_cpAyBRICtfFveGI2gEXpURrZb_nbEUZWLVNF7wFftqdykinjMOtw.P67iqdc373C65Mi4NTAHiw" },
+                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/xFhZfv3JDTms5uPr.NTBPlKdvj8r2naP2hjZo9ZNgvpyy-CIceRs43ns4HbRUlSU7uleJYZDa-Ln-zyKjoNVSL6b5BtLiOPlra4Cz7X1CuvdIwdsJyDbMESSYzKpAFe2D5a7qugF_K43Dm_Rl0eUth1o_RsntNMn8zhQnDhwZ4YF05l-QHMz9Kb_vPd0zYYLinfyKjjRt0TPY7XlQtqY0sZ7thDxKNf-czy6JTnYd8MSswNiVFPgRZLMYoeaRYZsd9tXvWw_kkk0RkSV70fwGCTD2aiRAgqN99rBgM4irZYK5uiRnV-0ibghm1i_d-C_Z-__GUGLou_KImgg1M-h4Q3YU_Fpaf_9Xx1CamCbeEMclINCNhW8HZhI0ev_CBkObZdJPBf_7-caRLCgxIpbLU83BNtbqWlY03K_-lrjVAj0VfD2BBF8VoBikV1vkNvwF3jAXpw0rZA.c6L6BA9y9GckQnP_ynT2gQ" },
+                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/ZQuj21SvRmSUM4F2.p4ZRwHCr808BlJs97s1U6jOCCjNnmd6HEUQrsOx-7ruxHLMWJt48_h9KuZbFHuGrzAfrS97cKXXqE75GGQfrrdinenv9cb2u7iiv6u8qnKHLwZ_hYBTJbKPWiEFeWwfT-eCJv3MUZwgOyLWxZeKrz4zLkxB--1ovHSmMBN9eMMhfEOzR8ZzG1F3XnShRQV8M2IqBNBNKv9M3yZP7lvSVTNEcAs7yEn3gvq11KR5dr204xMSdK-BG7En7a1b-9Pd_b3OJBEvAZsQpbady_cvUwcHd-wn7zW9WLb9Js4InRMfXq7tl_fUjRR52s5O0W09g9NN50ZJIPQlx1_Xvdxt4FGpXC6B4CWw9jvJQLfkwe8LD_SZJdYC0rqUhdukACoLGbmQoEjyY3hbJcKPPAo9G_PRTB6Z4dxAMJevncHFDNdskhMFwt_WtLxvUYg.xwxg-tApIWxT4YIS3Ev1Sg" },
+                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
+                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
+                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
+                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
+                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
+                ]
+            }
+        ];
+
+        let currentActiveItem = null, currentEpIndex = 0, previousView = 'home-view';
+        const video = document.getElementById('mainVideo');
+        const actionIndicator = document.getElementById('action-indicator');
+        const controlsOverlay = document.getElementById('custom-controls');
+
+        // --- AUTO SLIDING CAROUSEL LOGIC ---
+        const heroCarousel = document.getElementById('hero-carousel');
+        const dot0 = document.getElementById('dot-0');
+        const dot1 = document.getElementById('dot-1');
+        let currentSlide = 0;
+        let slideInterval;
+
+        function updateDots(index) {
+            if (index === 0) {
+                dot0.classList.replace('w-1.5', 'w-3'); dot0.classList.replace('bg-gray-600', 'bg-white');
+                dot1.classList.replace('w-3', 'w-1.5'); dot1.classList.replace('bg-white', 'bg-gray-600');
+            } else {
+                dot1.classList.replace('w-1.5', 'w-3'); dot1.classList.replace('bg-gray-600', 'bg-white');
+                dot0.classList.replace('w-3', 'w-1.5'); dot0.classList.replace('bg-white', 'bg-gray-600');
+            }
+        }
+
+        function slideToNext() {
+            const itemWidth = heroCarousel.offsetWidth;
+            currentSlide = currentSlide === 0 ? 1 : 0;
+            heroCarousel.scrollTo({ left: currentSlide * itemWidth, behavior: 'smooth' });
+            updateDots(currentSlide);
+        }
+
+        function startAutoSlide() {
+            stopAutoSlide(); // Clear any existing interval
+            slideInterval = setInterval(slideToNext, 3000); // 3 seconds per slide
+        }
+
+        function stopAutoSlide() {
+            if (slideInterval) clearInterval(slideInterval);
+        }
+
+        // Handle user manual scroll
+        heroCarousel.addEventListener('scroll', () => {
+            const scrollPos = heroCarousel.scrollLeft;
+            const itemWidth = heroCarousel.offsetWidth;
+            const newIndex = scrollPos > itemWidth / 2 ? 1 : 0;
+            if (newIndex !== currentSlide) {
+                currentSlide = newIndex;
+                updateDots(currentSlide);
+                // Pause auto-sliding temporarily when user interacts
+                stopAutoSlide();
+                setTimeout(startAutoSlide, 5000);
+            }
+        });
+
+        // Start auto sliding on load
+        startAutoSlide();
+
+        // Navigation
+        function switchTab(viewId) {
+            ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
+            document.getElementById(viewId).classList.remove('hidden');
+            window.scrollTo(0, 0);
+
+            document.getElementById('nav-home').classList.remove('nav-active');
+            document.getElementById('nav-downloads').classList.remove('nav-active');
+            
+            if(viewId === 'home-view') document.getElementById('nav-home').classList.add('nav-active');
+            if(viewId === 'downloads-view') {
+                document.getElementById('nav-downloads').classList.add('nav-active');
+                document.getElementById('dl-badge').classList.add('hidden');
+                loadDownloads();
+            }
+            if(viewId !== 'player-view') { video.pause(); updatePlayPauseUI(false); }
+        }
+
+        function goBack() {
+            if (document.fullscreenElement) document.exitFullscreen();
+            if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
+            switchTab(previousView);
+        }
+
+        // Render Homepage
+        function renderContent() {
+            const movieContainer = document.getElementById('movie-list-container');
+            const seriesContainer = document.getElementById('series-list-container');
+            let mCount = 1, sCount = 1;
+
+            contentData.forEach((item) => {
+                const isSeries = item.type === "series";
+                const kdramaBadge = item.isKDrama ? `<div class="absolute top-1 left-1 bg-rose-600/90 backdrop-blur text-[9px] px-1.5 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>` : '';
+                
+                const cardHTML = `
+                <div onclick="openPlayer(${item.id}, 'home-view')" class="relative w-[130px] shrink-0 cursor-pointer group">
+                    <div class="relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-900">
+                        <img src="${item.poster}" loading="lazy" class="w-full h-full object-cover">
+                        ${kdramaBadge}
+                        <div class="absolute top-1 right-1 bg-black/60 text-[10px] px-1.5 py-0.5 rounded text-gray-200">${isSeries ? 'Series' : 'Movie'}</div>
+                        <div class="absolute -bottom-3 -left-2 text-[80px] font-black text-white/50 italic leading-none drop-shadow-lg">${isSeries ? sCount++ : mCount++}</div>
+                    </div>
+                    <h3 class="text-sm font-medium mt-2 truncate text-gray-200">${item.title}</h3>
+                </div>`;
+                if(isSeries) seriesContainer.innerHTML += cardHTML;
+                else movieContainer.innerHTML += cardHTML;
+            });
+            loadDownloads();
+        }
+
+        // Setup Player
+        function openPlayer(id, fromView = 'home-view') {
+            previousView = fromView;
+            currentActiveItem = contentData.find(item => item.id === id);
+            
+            document.getElementById('player-title').innerText = currentActiveItem.title;
+            document.getElementById('player-rating').innerText = currentActiveItem.rating;
+            document.getElementById('player-year').innerText = currentActiveItem.year;
+            document.getElementById('player-genre').innerText = currentActiveItem.genre;
+            document.getElementById('player-desc').innerText = currentActiveItem.desc || "";
+            video.poster = currentActiveItem.poster;
+
+            const kdramaBadge = document.getElementById('player-kdrama-badge');
+            if(currentActiveItem.isKDrama) kdramaBadge.classList.remove('hidden');
+            else kdramaBadge.classList.add('hidden');
+
+            const epContainer = document.getElementById('episodes-container');
+            const epList = document.getElementById('episodes-list');
+            epList.innerHTML = '';
+            
+            if (currentActiveItem.type === "series") {
+                epContainer.classList.remove('hidden');
+                currentActiveItem.episodes.forEach((ep, index) => {
+                    const btnClass = index === 0 ? 'border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10' : 'bg-[#1c212a] text-gray-400';
+                    epList.innerHTML += `<button onclick="playEpisode(${index}, this)" class="ep-btn w-full h-10 rounded text-sm font-medium ${btnClass}">${ep.epNum}</button>`;
+                });
+            } else {
+                epContainer.classList.add('hidden');
+            }
+
+            switchTab('player-view');
+            playEpisode(0, null);
+        }
+
+        function playEpisode(index, btnElement) {
+            currentEpIndex = index;
+            video.src = currentActiveItem.episodes[index].link;
+            video.play();
+            updatePlayPauseUI(true);
+
+            if(btnElement) {
+                document.querySelectorAll('.ep-btn').forEach(b => b.className = 'ep-btn w-full h-10 rounded text-sm font-medium bg-[#1c212a] text-gray-400');
+                btnElement.className = 'ep-btn w-full h-10 rounded text-sm font-medium border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10';
+            }
+            let epText = currentActiveItem.type === 'series' ? ` E${currentActiveItem.episodes[index].epNum}` : "";
+            document.getElementById('player-title-top').innerText = `${currentActiveItem.title}${epText}`;
+        }
+
+        // --- DOWNLOAD SYSTEM ---
+        function startDownload() {
+            const dlId = `${currentActiveItem.id}_${currentEpIndex}`;
+            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
+            
+            if (downloads.find(dl => dl.dlId === dlId)) {
+                showPersistentIndicator('<i class="fa-solid fa-circle-check text-green-500"></i>', 'Already Downloaded');
+                return;
+            }
+
+            actionIndicator.classList.remove('hidden'); actionIndicator.style.opacity = '1';
+            let progress = 0;
+            
+            const dlInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 20) + 10; 
+                if (progress >= 100) {
+                    clearInterval(dlInterval);
+                    const epText = currentActiveItem.type === 'series' ? ` (Ep ${currentActiveItem.episodes[currentEpIndex].epNum})` : "";
+                    
+                    downloads.push({
+                        dlId: dlId, movieId: currentActiveItem.id, title: currentActiveItem.title + epText,
+                        poster: currentActiveItem.poster, link: currentActiveItem.episodes[currentEpIndex].link,
+                        size: (Math.random() * 200 + 100).toFixed(1) + " MB"
+                    });
+                    localStorage.setItem('moviebox_downloads', JSON.stringify(downloads));
+                    
+                    actionIndicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> <span class="text-green-400">Saved Offline!</span>`;
+                    document.getElementById('dl-badge').classList.remove('hidden');
+                    setTimeout(() => { actionIndicator.style.opacity = '0'; }, 1500);
+                } else {
+                    actionIndicator.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#00e6e6]"></i> <span>Downloading ${progress}%</span>`;
+                }
+            }, 500);
+        }
+
+        function loadDownloads() {
+            const dlContainer = document.getElementById('downloaded-items-container');
+            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
+            
+            if (downloads.length === 0) {
+                dlContainer.innerHTML = `<div class="flex flex-col items-center justify-center mt-20 text-gray-500"><i class="fa-solid fa-folder-open text-4xl mb-3"></i><p>No offline videos.</p></div>`;
+                return;
+            }
+            dlContainer.innerHTML = '';
+            downloads.reverse().forEach(dl => {
+                dlContainer.innerHTML += `
+                <div class="bg-[#1a1f29] rounded-xl p-3 flex items-center gap-4 mb-3 border border-gray-800 shadow-lg">
+                    <div class="relative w-20 aspect-video rounded-lg overflow-hidden shrink-0">
+                        <img src="${dl.poster}" class="w-full h-full object-cover">
+                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center"><i class="fa-solid fa-play text-white/80"></i></div>
+                    </div>
+                    <div class="flex-1 overflow-hidden" onclick="openPlayer(${dl.movieId}, 'downloads-view')">
+                        <h4 class="font-bold text-sm truncate text-white">${dl.title}</h4>
+                        <div class="flex items-center gap-2 text-xs text-gray-400 mt-1">
+                            <span class="text-green-500"><i class="fa-solid fa-circle-check"></i> Downloaded</span><span>| ${dl.size}</span>
+                        </div>
+                    </div>
+                    <button onclick="deleteDownload('${dl.dlId}')" class="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash-can"></i></button>
+                </div>`;
+            });
+        }
+
+        function deleteDownload(dlId) {
+            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
+            localStorage.setItem('moviebox_downloads', JSON.stringify(downloads.filter(dl => dl.dlId !== dlId)));
+            loadDownloads();
+        }
+
+        // --- SHARE LOGIC ---
+        function shareLink() {
+            if (navigator.share) {
+                navigator.share({ title: currentActiveItem.title, text: 'Check out this movie!', url: window.location.href })
+                .catch(console.error);
+            } else {
+                navigator.clipboard.writeText(window.location.href);
+                showPersistentIndicator('<i class="fa-solid fa-link"></i>', 'Link Copied!');
+            }
+        }
+
+        // --- PLAYER CONTROLS & GESTURES ---
+        function togglePlay() { video.paused ? video.play() : video.pause(); updatePlayPauseUI(!video.paused); }
+        function updatePlayPauseUI(isPlaying) {
+            document.getElementById('play-pause-icon').className = isPlaying ? "fa-solid fa-pause text-5xl drop-shadow-lg" : "fa-solid fa-play text-5xl drop-shadow-lg";
+            document.getElementById('bottom-play-icon').className = isPlaying ? "fa-solid fa-pause text-lg" : "fa-solid fa-play text-lg";
+        }
+        function toggleStretch() {
+            video.classList.toggle('video-contain'); video.classList.toggle('video-cover');
+            document.getElementById('stretch-text').innerText = video.classList.contains('video-cover') ? "Fit" : "Stretch";
+        }
+        function toggleFullscreen() {
+            const wrapper = document.getElementById('video-wrapper');
+            if (!document.fullscreenElement) wrapper.requestFullscreen(); else document.exitFullscreen();
+        }
+        async function togglePiP() {
+            try {
+                if (video !== document.pictureInPictureElement) await video.requestPictureInPicture();
+                else await document.exitPictureInPicture();
+            } catch (err) { showPersistentIndicator('<i class="fa-solid fa-circle-xmark text-red-500"></i>', 'PiP Not Supported'); }
+        }
+
+        function showPersistentIndicator(iconHtml, text) {
+            actionIndicator.innerHTML = `${iconHtml} <span>${text}</span>`;
+            actionIndicator.classList.remove('hidden'); actionIndicator.style.opacity = '1';
+            setTimeout(() => { actionIndicator.style.opacity = '0'; }, 2000);
+        }
+
+        // UI Hide Logic
+        let controlsTimeout;
+        video.addEventListener('play', () => {
+            controlsTimeout = setTimeout(() => { controlsOverlay.style.opacity = '0'; }, 3000);
+        });
+        video.addEventListener('pause', () => {
+            clearTimeout(controlsTimeout); controlsOverlay.style.opacity = '1';
+        });
+
+        // Touch Gestures
+        const gestureLayer = document.getElementById('gesture-layer');
+        let isDragging = false, startX = 0, startY = 0, dragAction = null;
+        
+        gestureLayer.addEventListener('touchstart', e => {
+            isDragging = true; dragAction = null;
+            startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        }, {passive: false});
+
+        gestureLayer.addEventListener('touchmove', e => {
+            if(!isDragging) return; e.preventDefault();
+            const diffX = e.touches[0].clientX - startX;
+            if(!dragAction && Math.abs(diffX) > 10) { dragAction = 'seek'; video.pause(); }
+            if(dragAction === 'seek') video.currentTime += diffX * 0.1;
+        }, {passive: false});
+
+        gestureLayer.addEventListener('touchend', e => {
+            isDragging = false; 
+            if(dragAction === 'seek') video.play();
+            // Tap to show/hide controls
+            if(Math.abs(e.changedTouches[0].clientX - startX) < 10) {
+                controlsOverlay.style.opacity = controlsOverlay.style.opacity === '0' ? '1' : '0';
+                if(controlsOverlay.style.opacity === '1' && !video.paused) {
+                    clearTimeout(controlsTimeout);
+                    controlsTimeout = setTimeout(() => { controlsOverlay.style.opacity = '0'; }, 3000);
+                }
+            }
+        });
+
+        // Time updates
+        video.addEventListener('timeupdate', () => {
+            if(video.duration) {
+                document.getElementById('progress-bar').value = (video.currentTime / video.duration) * 100;
+                document.getElementById('current-time').innerText = formatTime(video.currentTime);
+                document.getElementById('duration-time').innerText = formatTime(video.duration);
+            }
+        });
+
+        document.getElementById('progress-bar').addEventListener('input', (e) => {
+            video.currentTime = (e.target.value / 100) * video.duration;
+        });
+
+        function formatTime(s) {
+            if (isNaN(s)) return "00:00";
+            return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
+        }
+
+        window.onload = renderContent;
+    </script>
+</body>
+</html>
