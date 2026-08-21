@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Watch your favorite Korean Dramas, Movies, and TV Series online.">
     <meta name="theme-color" content="#0b0f16">
     <title>Movie Box - Streaming Platform</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- HLS.js Library -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -25,33 +26,27 @@
             width: 100%; max-width: 1280px; margin: 0 auto;
             background-color: #0b0f16; min-height: 100vh;
             position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            border-left: 1px solid #1f2937; border-right: 1px solid #1f2937;
             overflow-x: hidden;
         }
 
-        /* Fixed Fullscreen CSS */
-        #video-wrapper:fullscreen, #video-wrapper:-webkit-full-screen {
+        /* Perfect Fullscreen */
+        #player-view:fullscreen, #player-view:-webkit-full-screen {
             width: 100vw !important;
             height: 100vh !important;
             max-width: none !important;
-            max-height: none !important;
-            border: none !important;
-            border-radius: 0 !important;
-            aspect-ratio: auto !important;
+            background-color: #000;
         }
 
-        /* Standard Progress Bar */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; margin: 0; padding: 0; pointer-events: auto; }
+        /* Custom Range Slider */
+        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; pointer-events: auto; }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 14px; width: 14px; border-radius: 50%;
-            background: #00e6e6; cursor: pointer; margin-top: -5px; box-shadow: 0 0 5px rgba(0,230,230,0.8);
+            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
+            background: #00e6e6; cursor: pointer; margin-top: -6px; box-shadow: 0 0 8px rgba(0,230,230,0.8);
         }
         input[type=range]::-webkit-slider-runnable-track {
             width: 100%; height: 4px; cursor: pointer; background: rgba(255, 255, 255, 0.3); border-radius: 2px;
         }
         
-        .controls-transition { transition: opacity 0.3s ease; pointer-events: none; }
-        .controls-transition.active { pointer-events: auto; } 
         .video-contain { object-fit: contain; }
         .video-cover { object-fit: cover; }
         .nav-active { color: #22c55e !important; }
@@ -59,6 +54,13 @@
         .snap-x { scroll-snap-type: x mandatory; }
         .snap-center { scroll-snap-align: center; }
         #hero-carousel { scroll-behavior: smooth; }
+        
+        /* Prevent Default Scrolling on Video */
+        #gesture-layer { touch-action: none; }
+        
+        /* Hide default video controls */
+        video::-webkit-media-controls { display: none !important; }
+        video { outline: none; }
     </style>
 </head>
 <body class="flex justify-center bg-gray-900">
@@ -71,7 +73,7 @@
         <div id="home-view" class="block pb-24">
             <header class="pt-4 pb-2 px-4 sticky top-0 bg-[#0b0f16]/95 backdrop-blur-md z-40">
                 <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shrink-0 shadow-lg">
                         <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
                     </div>
                     <div class="flex-1 bg-[#1a1f29] rounded-full flex items-center px-4 py-2 border border-gray-800 max-w-2xl">
@@ -83,20 +85,38 @@
                     <a href="#" class="text-white font-bold whitespace-nowrap shrink-0 relative pb-1">Trending<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-white rounded-full"></span></a>
                     <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">Movie</a>
                     <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">TV Series</a>
-                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">Anime</a>
                 </nav>
             </header>
 
             <main>
                 <!-- Hero Banner Carousel -->
-                <section class="mt-2 w-full overflow-hidden">
-                    <div class="flex overflow-x-auto snap-x no-scrollbar w-full" id="hero-carousel">
+                <section class="mt-2 md:mt-4 w-full overflow-hidden md:px-4">
+                    <div class="flex overflow-x-auto snap-x no-scrollbar w-full md:rounded-2xl" id="hero-carousel">
                         
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(5)">
-                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
-                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
+                        <!-- Hero Item: Bachelor Point -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] sm:aspect-video md:aspect-[3/1] lg:aspect-[4/1] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(7)">
+                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-125">
+                            <div class="absolute inset-0 w-full h-full flex justify-center items-center z-10 py-0 md:py-4">
+                                <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" loading="lazy" class="w-full h-full object-cover md:object-contain md:rounded-lg shadow-2xl">
+                            </div>
                             <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
+                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
+                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
+                                    <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" class="w-10 h-14 rounded-lg object-cover">
+                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">Bachelor Point</h4></div>
+                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Hero Item: Mad Concrete Dreams -->
+                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] sm:aspect-video md:aspect-[3/1] lg:aspect-[4/1] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(5)">
+                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-125">
+                            <div class="absolute inset-0 w-full h-full flex justify-center items-center z-10 py-0 md:py-4">
+                                <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover md:object-contain md:rounded-lg shadow-2xl">
+                            </div>
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
+                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider z-20">KDRAMA</div>
                             <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
                                 <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
                                     <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" class="w-10 h-14 rounded-lg object-cover">
@@ -106,32 +126,7 @@
                             </div>
                         </div>
 
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] md:aspect-auto md:h-[400px] lg:h-[450px] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(6)">
-                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-40 blur-xl scale-110">
-                            <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" loading="lazy" class="relative w-full h-full object-contain z-10 drop-shadow-2xl">
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider shadow-md z-20">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
-                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
-                                    <img src="https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg" class="w-10 h-14 rounded-lg object-cover">
-                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">The Legend of Kitchen Soldier</h4></div>
-                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
-                                </div>
-                            </div>
-                        </div>
-
                     </div>
-                    <div class="flex justify-center gap-1.5 mt-3">
-                        <div class="w-4 h-1.5 rounded-full bg-white transition-all" id="dot-1"></div>
-                        <div class="w-2 h-1.5 rounded-full bg-gray-600 transition-all" id="dot-2"></div>
-                    </div>
-                </section>
-
-                <section class="mt-6 pb-2">
-                    <div class="flex items-center justify-between px-4 mb-4">
-                        <h2 class="text-lg md:text-xl font-bold border-l-4 border-green-500 pl-2">Trending Movies</h2>
-                    </div>
-                    <div id="movie-list-container" class="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2"></div>
                 </section>
 
                 <section class="mt-6 pb-6">
@@ -171,73 +166,70 @@
         </nav>
 
         <!-- ==========================================
-             PLAYER VIEW (Fixed Layout & Perfect Fullscreen)
+             HLS.JS CUSTOM PLAYER VIEW (FIXED)
         =========================================== -->
-        <div id="player-view" class="hidden pb-10 bg-[#0b0f16] min-h-screen">
-            <main>
-                <!-- Video Section - Uses Flexbox for perfect internal positioning -->
-                <section class="w-full bg-black relative group flex justify-center items-center overflow-hidden" id="video-wrapper" style="aspect-ratio: 16/9; max-height: 75vh; margin: 0 auto;">
-                    
-                    <video id="mainVideo" class="w-full h-full video-contain pointer-events-auto" playsinline preload="metadata">
-                        <source src="" type="video/mp4">
-                    </video>
+        <div id="player-view" class="hidden fixed inset-0 bg-black z-[100] flex flex-col">
+            <!-- Video Container -->
+            <div class="relative w-full flex-1 bg-black flex justify-center items-center overflow-hidden" id="video-container">
+                
+                <!-- Main Video Element -->
+                <video id="mainVideo" class="w-full h-full video-contain" playsinline preload="auto"></video>
 
-                    <div id="brightness-overlay" class="absolute inset-0 bg-black pointer-events-none z-10" style="opacity: 0;"></div>
-                    <!-- Fixed: Added gesture-area ID -->
-                    <div id="gesture-area" class="absolute inset-0 z-20 touch-none cursor-pointer"></div>
+                <!-- Gesture Layer (Swipe Left/Right, Up/Down) -->
+                <div id="gesture-layer" class="absolute inset-0 z-10 cursor-pointer"></div>
+                
+                <!-- Center Action Indicator (Time / Volume) -->
+                <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/70 backdrop-blur-md text-white px-6 py-4 rounded-xl text-2xl font-bold pointer-events-none flex items-center gap-3 shadow-2xl">
+                </div>
+
+                <!-- Custom Controls UI -->
+                <div id="custom-controls" class="absolute inset-0 z-30 flex flex-col justify-between pointer-events-none opacity-100 transition-opacity duration-300">
                     
-                    <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/80 backdrop-blur text-white px-6 py-4 rounded-xl text-xl font-bold pointer-events-none tracking-wider flex items-center gap-3 shadow-2xl transition-opacity duration-200">
+                    <!-- Top Bar -->
+                    <div class="w-full flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent pointer-events-auto">
+                        <div class="flex items-center gap-4">
+                            <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition drop-shadow text-2xl"><i class="fa-solid fa-arrow-left"></i></button>
+                            <span id="player-title-top" class="text-base sm:text-lg font-bold text-white drop-shadow-md">Loading...</span>
+                        </div>
                     </div>
 
-                    <!-- UI Controls - Flex Layout ensuring absolute Top and Bottom limits -->
-                    <div id="custom-controls" class="controls-transition active absolute inset-0 w-full h-full z-30 flex flex-col justify-between pointer-events-none">
+                    <!-- Center Big Play/Pause Button -->
+                    <div class="flex-1 flex items-center justify-center pointer-events-none">
+                        <button id="center-play-btn" onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-24 h-24 flex items-center justify-center drop-shadow-2xl z-50">
+                            <i id="center-play-icon" class="fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100"></i>
+                        </button>
+                    </div>
+
+                    <!-- Bottom Control Bar -->
+                    <div class="w-full bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-auto px-4 pb-6 pt-16 flex flex-col justify-end">
                         
-                        <!-- Top Header Bar -->
-                        <div class="w-full flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent pointer-events-auto">
-                            <div class="flex items-center gap-3">
-                                <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition drop-shadow"><i class="fa-solid fa-chevron-left text-xl sm:text-2xl"></i></button>
-                                <span id="player-title-top" class="text-sm sm:text-base font-bold text-white truncate max-w-[200px] md:max-w-[500px] drop-shadow-md">Loading...</span>
-                            </div>
+                        <!-- Progress Bar Area -->
+                        <div class="flex items-center gap-3 w-full mb-4 z-50">
+                            <span id="current-time" class="text-sm text-white/90 font-medium w-12 text-right">00:00</span>
+                            <input type="range" id="progress-bar" value="0" step="0.1" class="flex-1 cursor-pointer">
+                            <span id="duration-time" class="text-sm text-white/90 font-medium w-12">00:00</span>
                         </div>
-
-                        <!-- Center Play/Pause -->
-                        <div class="flex-1 flex items-center justify-center pointer-events-none">
-                            <button onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-24 h-24 flex items-center justify-center drop-shadow-2xl z-50">
-                                <i id="play-pause-icon" class="fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]"></i>
-                            </button>
-                        </div>
-
-                        <!-- Bottom Controls Bar -->
-                        <div class="w-full bg-gradient-to-t from-black/95 via-black/70 to-transparent pointer-events-auto px-4 pb-4 pt-12 flex flex-col justify-end">
-                            
-                            <!-- Progress Bar Row -->
-                            <div class="flex items-center gap-3 w-full mb-3 z-50">
-                                <span id="current-time" class="text-xs sm:text-sm text-white/90 font-medium w-12 text-right">00:00</span>
-                                <input type="range" id="progress-bar" value="0" step="0.1" class="flex-1 cursor-pointer">
-                                <span id="duration-time" class="text-xs sm:text-sm text-white/90 font-medium w-12">00:00</span>
+                        
+                        <!-- Bottom Buttons -->
+                        <div class="flex items-center justify-between text-white w-full z-50 px-2">
+                            <!-- Left: Play/Pause -->
+                            <div class="flex items-center gap-6">
+                                <button onclick="togglePlay()" class="hover:text-[#00e6e6] transition text-xl"><i id="bottom-play-icon" class="fa-solid fa-play"></i></button>
                             </div>
                             
-                            <!-- Toolbar Row -->
-                            <div class="flex items-center justify-between text-white w-full z-50">
-                                <!-- Left Tools (Play, Skip) -->
-                                <div class="flex items-center gap-4 sm:gap-6">
-                                    <button onclick="togglePlay()" class="hover:text-[#00e6e6] transition text-lg sm:text-xl"><i id="bottom-play-icon" class="fa-solid fa-play"></i></button>
-                                    <button onclick="skipVideo(-10)" class="hover:text-[#00e6e6] transition text-lg sm:text-xl" title="Rewind 10s"><i class="fa-solid fa-rotate-left"></i></button>
-                                    <button onclick="skipVideo(10)" class="hover:text-[#00e6e6] transition text-lg sm:text-xl" title="Forward 10s"><i class="fa-solid fa-rotate-right"></i></button>
-                                </div>
-                                
-                                <!-- Right Tools (Stretch, PiP, Fullscreen) -->
-                                <div class="flex items-center gap-4 sm:gap-6 text-lg sm:text-xl">
-                                    <button onclick="toggleStretch()" class="hover:text-[#00e6e6] transition drop-shadow" title="Stretch / Fit"><i class="fa-solid fa-crop-simple"></i></button>
-                                    <button onclick="togglePiP()" class="hover:text-[#00e6e6] transition drop-shadow" title="Picture in Picture"><i class="fa-solid fa-clone"></i></button>
-                                    <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] transition drop-shadow" title="Fullscreen"><i id="fullscreen-icon" class="fa-solid fa-expand"></i></button>
-                                </div>
+                            <!-- Right: Stretch & Fullscreen -->
+                            <div class="flex items-center gap-6 text-xl">
+                                <button onclick="toggleStretch()" class="hover:text-[#00e6e6] transition drop-shadow" title="Stretch / Fit"><i id="stretch-icon" class="fa-solid fa-expand"></i></button>
+                                <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] transition drop-shadow" title="Fullscreen"><i id="fullscreen-icon" class="fa-solid fa-compress"></i></button>
                             </div>
-
                         </div>
+
                     </div>
-                </section>
+                </div>
+            </div>
 
+            <!-- Details Section Below Video -->
+            <div class="bg-[#0b0f16] flex-1 overflow-y-auto pb-10">
                 <section class="p-4 max-w-4xl mx-auto" id="info-section">
                     <div>
                         <h1 id="player-title" class="text-2xl md:text-3xl font-bold mb-2">Title</h1>
@@ -251,16 +243,16 @@
                     </div>
 
                     <div class="grid grid-cols-4 md:flex md:gap-4 gap-2 border-b border-gray-800 pb-5">
-                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col md:flex-row items-center justify-center gap-1.5 transition md:w-auto">
+                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
                             <i class="fa-solid fa-plus text-sm"></i> Add to list
                         </button>
-                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col md:flex-row items-center justify-center gap-1.5 transition md:w-auto">
+                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
                             <i class="fa-solid fa-share-nodes text-sm"></i> Share
                         </button>
-                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-bold flex flex-col md:flex-row items-center justify-center gap-1.5 transition border border-[#00e6e6]/30 md:w-auto">
+                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-bold flex flex-col items-center justify-center gap-1.5 transition border border-[#00e6e6]/30">
                             <i class="fa-solid fa-download text-sm"></i> Download
                         </button>
-                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col md:flex-row items-center justify-center gap-1.5 transition md:w-auto">
+                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
                             <i class="fa-solid fa-file-arrow-down text-sm"></i> View Dls
                         </button>
                     </div>
@@ -270,11 +262,11 @@
                             <h3 class="font-bold text-lg md:text-xl">Episodes</h3>
                         </div>
                         <div id="episodes-container" class="mt-4">
-                            <div id="episodes-list" class="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2.5"></div>
+                            <div id="episodes-list" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5"></div>
                         </div>
                     </div>
                 </section>
-            </main>
+            </div>
         </div>
     </div>
 
@@ -285,24 +277,23 @@
         // Database
         const contentData = [
             {
+                id: 7,
+                title: "Bachelor Point (2026)", type: "series", isKDrama: false,
+                poster: "https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg",
+                rating: "8.5/10", year: "2026", genre: "Comedy, Drama",
+                desc: "A story of friends living together in a bachelor point. Language: Bangla | Quality: WEB-DL",
+                episodes: [
+                    { epNum: "Ep 105-112", link: "https://pub-538edaef4a1246c989cd0c69ae08ce40.r2.dev/media/csYdVqmU/main?token=1787270400-45d2a0bfe7e8bb8902f136896c3b20e3778a52e3" }
+                ]
+            },
+            {
                 id: 5,
                 title: "Mad Concrete Dreams", type: "series", isKDrama: true,
                 poster: "https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg",
                 rating: "8.3/10", year: "2026", genre: "Crime, Comedy, Drama",
                 desc: "A gripping tale of love and crime in a concrete jungle.",
                 episodes: [
-                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/TkiDeUri225cxgCO.oaUSTknUsZxHpQmmmHF1e24BO0o_E2QUUurOf4WN1EWnBXIh47C5zMXUYvWiOGEvP4UIUn12rw9L3dEIMNMIBDZf578njKmhZX7tbrJ9mlx_bAMrZ-XjIBpVlU2igojcwn6GHEo4G0atrSxRQkJCNGeF6R8BOQzhl6EpwD7zqeF7hdAEHzznutaOEsy-j45SKNQA8vM0R7Dvz0_bRNaKZxo6CASqcsFzWR51g8peR1bGkhLNgqnn-w_ilOKExYCJu8_q2VGN7PWBu3g9hsVHsn4RS_1i8V7AdQMuoZQTGC_qjMkOZFN8Co6QFuPjBYnfv22BiLjV6CJmuCAVVe5sjehl0-m4NjlG4y-XvaQiq9yR4kCQ316MRwHP74ywc9zgYGxfZlqYf6x_0asGQrCSboi7VAClWJqVeSGfghI.wA3d38jjwgem9qBcrRlCUg" },
-                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/V8NRAzPKdy-X5xfm.9YmkXisMCrj2kujwu8v270WaVio9_gh9fphWwI9tnVvKDiN8PL79PGgQM_Xmg3P-sQadJXgqPwa0U5zMjA8A8AfApg2MqstKg9xIu8Tc_P46YOy656neyxPwQ-VDJucDrAGWYdENuIW5SS9Eza6rrCkmL-WONX33i_BfXo81GKfwJ7s502uHjOjuAyzgJxRKSzXA31QxqtKvo_ywe3GEnCpV3XbLIrFQJAlx-A6Lg3YvG8i0uHEjgExdAlX5iAStKqjZxqVOyXRX0ItKB-20XVNY1ELcQV_KpShRgwxF0fwhhdE1Rr4Z95VjneNcY_0b9NaiEyF7Zk4qnaP_05ZLvsFQr2wIurVY3BLkChVvFpG79Yy2MLTKnaZH8KiwL7dkX9aQsyB6YbIhBljbXD1pY8TEnTPPgsowrN22pAkzhO4UjGUNsQ.dqQNjLWQSyTYwm7UBaWNGQ" },
-                    { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/XYTCWwCEB-v57WX3.uE-T6reC1RFhxQw_ckF2j1iFgH9dSaXWLAd8YZSBZUSyUa8brp-8HXXpzJlt79TpexBlmj8_SygPS2X4oTIFB1X5UJh9RIWgqDKg9et4dnLkfJZktT0vLUnYKr1ZgZHY0nXzi85F9dxJ1IJDIKX4-w0PGnL-BGXk7VXkraV5KRtLiAvgBXUe-LgzV_Wx6eVQdTPYFZ0Z9Wmrnz8mCZVUxvxhDxFKEfWOitH98S5oBLv58SjgTycMavvrUedRmMvLzzn82pIIvjOmmV_60YgVEKGrTcj3y7eGTQcjhKmJjJy9V3IFC2ZAM4xMyg7aSAwriDqtAQ7z7PNKDzkZZ1BhhfufIVejCdnIxbtS4q1coHgFiGEsXn_ST27GYxB1ojBRc6FMIubDo-SgeqCljm54aR9e_Q-IuYygvrslMc6oRPfu7_nKag.PNRmVyvTpcFZC-rQvOMz5g" },
-                    { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Ea65E1b-xfPdNsAu.7Fd9o3fVPsTHn8qmS2R5dCcmJJhxbeg8sSwK9JoqZnrUHs-k02fZgE-hc7UlsZziDQ__hdgvZVHVBN0Nu3EdsyKT-5my3sY6v2_ZrL1Bsoy9JwXsnpKNHxern1dXPcR6l2nU4k5Qmfzl5567IvlOO2AF8gp4xaGBwWpkIived9M5KlTLC9M_vJz0v7LukN-0JRMxtEoG-I6Hm6SF5wZjr3k6JDHfAI7nU7xk5wuY1K7SAhJbbAGgUP1Mwb-LIBdt42uekc0fC65citkGAT7qK4hKLrTWKS5rKxjuLs5d8GWv_diWpMMF2XJS6td6XgRf3w0UT9tSlcL78lwtWFB-qhjvpVai5ZevlG9NMWcw-t-yq72MLp_he8-vHFIU0kTixi_n3DbqGyXJYH10HfefZz2wQQsdXczBRaDHURksUIS-Xq5dxPk.8WNpv0_aNf75esK0gM1f6Q" },
-                    { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/EdiwBoqHrvLv9qkP._6zxRFx_melN6WkKjqfp2JnyhJZGoqzhTjIHxIc8erH12mAiPR0Det3AP1WJFgB1H3aChPp5M_DQyN_ZcyC64byeBXkSqiFtTSMABPvfh0_8_jLX0pCsxm_IU6ZlgdPqFydms6r5eq3P24_qO0a0vuzAZdbJ09lc_LeRzCiQO4nRLqnbMvw_-f0TIYAlqWfT7xqttWad1OYGukURRsA0vkXCIAX9ZjeTifgKuyHHad2Y5q9Emt0f6QOhlUOuYgO_C2ZmHaogemL3fWbbm7N0bhivhNhmMIJkpTI7-frV-d26E6cUW8ek9M7eeDDqMln2pgdRuLLjkqXR3yxwlos7JZKZRsN7xin1VhotPZCumLtg8cGwlzt1ibuDHzWSsox6zyoTzdQwreGqCYIZ1XKShJcmD0QB9SRq7e5ojAAbOtmjHr59mt4.WljctO5a7O8gqbFE6emwgw" },
-                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/uWmC--D4BSNAI00d.m4F6giFHmNceKJKC3MtZJwcZ-lZsE6a_I9LEIWq_PFRqzY37kI6o4Q9tPnj6FR0PJ5ISdGaDWU7MLMxAKeCZFAY9krdqM9yD2zk0zDhc4Q1AwMddhtptXMXII4CIQEyf-v579eQW4_RfkxtWckPJsMGT2Evt2ugCcks8I6Q5gEtarBxfmFc-jabo9jsW7XZ2IoRB7hdJZKX97WNMtxvtMD4JpJ3e6IAiB1xH1bUNxVKw0rWo7jm-MoB0wctPx3wZuPFeFV8EsyKUSiWql0iJ0pmb69BBlz2KkPF-rPrahmAXsLaYoQ7DsEIAYm4ONurVcmrWDqpWIUKlomN1UMz7vSFlyLheUErYORXrdNbSl_ZL_23o6HbQVUaaIXzYHlHX5qbxkkDEQfFGntaEmDWgKqSVs0OZ9_DZloCf2TpTJxUhZYiTypk.sPupGktuRu-7uPDvOyh0DQ" },
-                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/yWZDeRKRu6d0N3ju.mxyW4BdRiJoYsVrAK7Pmo5l4rvxGz24QR2RRL5Ap_UiBJVjXpn9AT6BTTYS_r0ipB8kjZpj-LaK0eyRpD0fRoT21WJ0RX2IniWwhMatvhGJDoBRpzok6uVAMnZvcP8InxWLcyUmc2dVz9lKaMiC3ri_8KCU7k5MlLAeT7VjYoNYFjft1fjRX7kW_AhY3zdH1u4WQxzQShrUvgPtmE6o1-R_5IO80hygwd1xuUmegtWIFO5xb8HaiZtaapa0rv4BfEdq4tchWDMRCZzo2Zlw7T00nNRcyxQlflu_Gu_SRkxr6lULPU09gHnBbrIJIj6UyC8SNDzUg869s-zY6vNinU5gnvBkAfz08DNrTjr1ZrrwSO_4S5zV-02KFTrWxsULnW3u24pY6S_syQh9O38FfitGDLwsEm2Ne_tT7_9ZEM81TlwB-EPA.C4r8dWqXwpfbJ37ZRL8p4g" },
-                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
-                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
-                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
-                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
-                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
+                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/TkiDeUri225cxgCO.oaUSTknUsZxHpQmmmHF1e24BO0o_E2QUUurOf4WN1EWnBXIh47C5zMXUYvWiOGEvP4UIUn12rw9L3dEIMNMIBDZf578njKmhZX7tbrJ9mlx_bAMrZ-XjIBpVlU2igojcwn6GHEo4G0atrSxRQkJCNGeF6R8BOQzhl6EpwD7zqeF7hdAEHzznutaOEsy-j45SKNQA8vM0R7Dvz0_bRNaKZxo6CASqcsFzWR51g8peR1bGkhLNgqnn-w_ilOKExYCJu8_q2VGN7PWBu3g9hsVHsn4RS_1i8V7AdQMuoZQTGC_qjMkOZFN8Co6QFuPjBYnfv22BiLjV6CJmuCAVVe5sjehl0-m4NjlG4y-XvaQiq9yR4kCQ316MRwHP74ywc9zgYGxfZlqYf6x_0asGQrCSboi7VAClWJqVeSGfghI.wA3d38jjwgem9qBcrRlCUg" }
                 ]
             },
             {
@@ -310,33 +301,10 @@
                 title: "The Legend of Kitchen Soldier", type: "series", isKDrama: true,
                 poster: "https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg",
                 rating: "8.0/10", year: "2026", genre: "Comedy, Drama, Fantasy",
-                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post, where First Sergeant Park Jae Yeong, First Lieutenant Cho Ye Rin and military cook Yun Dong Hyeon are stationed.",
+                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post.",
                 episodes: [
-                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/wWez0Ni-WxYs6XDx.6K2a6ZDuNWi90OpbhS3iOQf5KRuACA9qZ7VtyfwjWt9o5jl4ruYxqrD7KxEtJisodMcvVxvr7L3-THBSGECeVB8gDQ17l1Gtlebhr-f9J2RFE5wP8H-LJaO4ReN5NpWDTlOeY15JnaeB_Zgs4zFm_YROW8JHrY_2YM614aP4l9w7Z5UBHE6c50t5hjdtwUOAwnEyVUlPuB2S7XH0Zb5kkeRvR6mp3gQiJt4GMbzQlaETfaZyLbbFLTEEXeAJRIED5tPKTsWPHDtZfYFK4PGMcSvPAXDT0R4V08yDsuvFDD1SYVbGmgMEcbxmHHbjWW-1o5W-Vb0HAGmg88ryXipVc9epdeMC8Jt3QMRa-6-tZXGQ8vP4fWiWoX27GICxjZDzZfvUAWWr3kaYq1Mq8WSZUI9EruFvunU5XxJzW58sieUb9Q.C4BIOXZ09R6tSkaHl2ytsg" },
-                    { epNum: "02", link: "https://cdn.dramalinkbd.tv/p/NSvz_-EF752B2LLY.loBbc5U86vCMHdk0S8KUaG-bCK5SavKfxtJgQiD6Ie8k_sh4j2YAFVeJTh6Bw6k9yqSfSNfQ3korWzBbfHttZ4cr9WazpkJ0DlXuysJGRoy1FPjy25MM_U2YUhemaormG2eo_Vma3a8ALGI_UNqjOp2vcOhHtbm6Ga-lcCDBJZcNSOvLHHWAchTRR2eeXem3bRaRD-nOD4Bu83wSfYqhtwx_U6mHSFfW9bGntWA81jHEVB2STVcSHRQLLxRa67CuV4SFO57AslLz33lqphyXuuLXaCNTHtJrcAnkiTy129MFHg-OVPbM012uHO9DyL0njh7be2taGvVrMD8-9qpdDntVzPWvjy9BDaC8tGPt6IENBGZP33NgJ2f87B3Qqx0-0Zax1m5EWMwlv1F05oWB54dk15V9KZfMQJ1AKy2DGeT7848xAsnat8MM.2zmAOYlohT3T099z97zvJA" },
-                    { epNum: "03", link: "https://cdn.dramalinkbd.tv/p/VrrNdBIJL-G3ygXc.7hl9Y81qM7WZJoc5uiI03UxWl7VtVJLSR81zxff6kbwEHDAQDFRcka6wvkmmXUI7DxqFPEjjRA2Gy4WF8QMihayvsU0vXKwyBsibAwKkWyidTAy15KNYGDdKYbZ6oOi6BMF2IChm7H-CKm5PFD8C3NlsprMRmKoC30fzWZX9i5iV5Fe3vKHwQZwTXbIcReVXr_gQkpSJVLa_GTK8fmEuCMi5yrnC3f3OGvTbZCzehZyivIgWqdoq1QlJ-SItHZ3nc0H6uj29tijxJh22naizrvMxZxl8n9hf_Nionm46f0fDOX564H2Hf7AMlVVs92XaRwRDrvP_gVB9Ezogxax61eJjv1gsuTIrGY0_nETgphVGd5o3TS6HS17eUhCfpDtS00dAYoFtenkpgioFRSJnWFMOaMqFCWGW1DNoGFnlu2OPT3pCeUk1EBfS.lOdc7OYIs8vRSGmj-lxR2A" },
-                    { epNum: "04", link: "https://cdn.dramalinkbd.tv/p/Fb6qalk1-eV5775S.WphuXXzDW_CferdjoBLs-XMqYO_OQXPA0E_-sOdlc8P42DncyibrhCJcHse40ANto8BI9E6u_tY-jEiDEe1f9pqtwypXsvabYtdsVHtQ8wd0GuteX-uEaIRFJhsmvUZRq1QSgld--4xY0-NAdBn9yh49vIXF3Pa5EtkgVoxAeLA-5zPtUdfND1Zn0Vs6lzEtaAJHENLUiRFTxkZVGeW7AN__2PaMDnL0iRl2aKo6uu7-8cKzR9912zWnROscZ5Kmwxx6RcIjwP_UWfGN2MTBCZlBsGst9iNY03E-mIIGIv4AHhtpp-_NgT_BF4kFIDZiCyD0xPFar0xv6DGaONdZCyacoRzLbqJWDnlPEzBSOJtCqXDN23d0BaOlcQ_kAR2q5JAz6qLDQWwYuoDlwQqPgIeiyvJWGgh13FnsM62UXhc1JpT0imS7VOq12w.9QMfRqzcjnJE55BPM7z2-w" },
-                    { epNum: "05", link: "https://cdn.dramalinkbd.tv/p/sxPui9pQRXFBzDCw.J0Y-BvX9N_71iAmXKFuAnLlCRel41lTmmlYvbSgmejoSz5mk2dKNldoFXSWnNv0sBYcYs6nRQcFDcNaDbvK6fcwhfG49FfPVpuqe35IVsjb7Ws_WGbdiAfX9fp7iLuRCPw4Ll2OUEQEcQnTqeAHE78K2R00LH1E2SlmtZSMXiVcjnvFonQw_Ar5pc8iW_xkH4vaZDAVqUX7EjK_Vs8SwgqpNDCGBKyZROXEdz-KNP6vK87ZwLD8JRq1l1RSFsRf1DmzBIgCkBMY7scRPqTRj1mg2MIhgToerJWfBPsoj1bsnvIVK3MxYOtND6LQMAdaMTByuXnSkYgsZvGEqABPvjuXPBJzYdtUov-9wXVh7Lur8-ANchKchUPycWugC0LzS8echZ_cpAyBRICtfFveGI2gEXpURrZb_nbEUZWLVNF7wFftqdykinjMOtw.P67iqdc373C65Mi4NTAHiw" },
-                    { epNum: "06", link: "https://cdn.dramalinkbd.tv/p/uWmC--D4BSNAI00d.m4F6giFHmNceKJKC3MtZJwcZ-lZsE6a_I9LEIWq_PFRqzY37kI6o4Q9tPnj6FR0PJ5ISdGaDWU7MLMxAKeCZFAY9krdqM9yD2zk0zDhc4Q1AwMddhtptXMXII4CIQEyf-v579eQW4_RfkxtWckPJsMGT2Evt2ugCcks8I6Q5gEtarBxfmFc-jabo9jsW7XZ2IoRB7hdJZKX97WNMtxvtMD4JpJ3e6IAiB1xH1bUNxVKw0rWo7jm-MoB0wctPx3wZuPFeFV8EsyKUSiWql0iJ0pmb69BBlz2KkPF-rPrahmAXsLaYoQ7DsEIAYm4ONurVcmrWDqpWIUKlomN1UMz7vSFlyLheUErYORXrdNbSl_ZL_23o6HbQVUaaIXzYHlHX5qbxkkDEQfFGntaEmDWgKqSVs0OZ9_DZloCf2TpTJxUhZYiTypk.sPupGktuRu-7uPDvOyh0DQ" },
-                    { epNum: "07", link: "https://cdn.dramalinkbd.tv/p/yWZDeRKRu6d0N3ju.mxyW4BdRiJoYsVrAK7Pmo5l4rvxGz24QR2RRL5Ap_UiBJVjXpn9AT6BTTYS_r0ipB8kjZpj-LaK0eyRpD0fRoT21WJ0RX2IniWwhMatvhGJDoBRpzok6uVAMnZvcP8InxWLcyUmc2dVz9lKaMiC3ri_8KCU7k5MlLAeT7VjYoNYFjft1fjRX7kW_AhY3zdH1u4WQxzQShrUvgPtmE6o1-R_5IO80hygwd1xuUmegtWIFO5xb8HaiZtaapa0rv4BfEdq4tchWDMRCZzo2Zlw7T00nNRcyxQlflu_Gu_SRkxr6lULPU09gHnBbrIJIj6UyC8SNDzUg869s-zY6vNinU5gnvBkAfz08DNrTjr1ZrrwSO_4S5zV-02KFTrWxsULnW3u24pY6S_syQh9O38FfitGDLwsEm2Ne_tT7_9ZEM81TlwB-EPA.C4r8dWqXwpfbJ37ZRL8p4g" },
-                    { epNum: "08", link: "https://cdn.dramalinkbd.tv/p/GFYHTlQ8Id2cLsJo.jEyEGf6tAc3xQAlCHCjOyeXBU5bSlkFBo7MJ-b6ExKtdnx0L91ep98vxLSq7RZm7dvieBAvyMTBJLTpsxwagHyQiW1JhTL7AxXWzx3pGSDEalNG8fXryxUUpuSOexZ5XFWO9eQuTLKc1BLsX_ebWqUGS-f36N9O_8oK9GcZkBoRhzaWc6zkEJw0-BDD4laUMfKsPZ24lnybz9kh_tmoWMD0TYACBfBt1rAPV5sDAu3vQQqHDur0IHW9V-y8wsyt98OZLCZxdWoJyythkoR2YHLze6BX5FZsedUfh7uldBkC50ibYRAYQRowEYuqZ9ENNzacEV7y_BdR_sJKjkDKWpou33WDAAgw41YdexVuwALTVKsNqOIz9078lkUMuVZlxzNNDJJhrPH0CW-aEqkagxw-jam8E_US5MMRKPp1grUJ5x3ifIGpp-vWp2A.6PV7fztwqdT3337MMot7Gg" },
-                    { epNum: "09", link: "https://cdn.dramalinkbd.tv/p/aE6qnY3ixA-E1A-m.mXCkl9TXch8KOuOApjmbBGAV3DkEA0xS1uqKm-tOGPvHBYeP_wuC-Wcvl0tNxrzID1l4sHXWY6xxvICUleTIf4sKom1o86uWRgbJo_mVc2Bfc8_GCS5A6zirVCXf8qzHSMZU0fYn4kcht3edJvRPiGOOoUdFpM-8gCso57R4if02x3hLaoYuSjxFcoM7ZlPo4CSJRMN9MaCgku535BaHxtVdKdaIFqP3pujWkSdL12LKcDAv96HyVOedbgYEBi60guDzPAkJJ9AZaxQcW98g1WcTVmLr8wUgZbe_ldmVeLRN9wpeqznTrmDTr71u64GcqZGjeE0BMCpRE9yUGDAUBHH_wAEbL4EKn0wLbrKnH3AIdoASH10OQGIbswcLR3bCl2EBDNHEwkG4G-58aPx4_vt4lqGnm2vHuqWtYeX7dyZgsWehGHdW_G9PoA.clwewqGNtU1Cj-TR5MJkKg" },
-                    { epNum: "10", link: "https://cdn.dramalinkbd.tv/p/PKdO2IDC5IrMNBnV.O_qhMx31QEGDMG8dSdesujYcn7MSho2dQpJGISB0pJDcbPClfk46unQsMBziXCIR8KWFDOObBus5_wixgYTYr8OdJBIXPW9AjqO2IXgroNpeKuAiZuTN1QxxdvJfwmE1E9UYidtfIQU0A3hj1ALzDcy8Oggc-ycgTx-ivsbEIGnTFL3gc8fXdqYjQKdwrVUqAJaBNjFDPxaPBnATOclenp8V0LTuDXSM8bwIBeNSWM6gnviGD4YJ6-vx_PLRu3XorHIVsqIYyHkcJC9Gb-SuWD-eWBhS3N7my9z40FnNDRgCLwLDMQp6j7HZKZCtO8rrpf723N9AgTrjYcSPglf9-TDLGbg-7sOcsGaDbzBeHCz1H8aAI6FUIpzYqpi_1TCvJ3ga_IDWnVlxP-dI5WIVeSv6zjw8kPZCGN5gJfSEq3OUBEM7h13UqFZPlQ.uLv8rJDThXYpKMh1QnyTdw" },
-                    { epNum: "11", link: "https://cdn.dramalinkbd.tv/p/y3GbWK8u2Ba2j5YJ.0TEbQ1P8e8WBFvVMQZsimKzTuRNYqguzEE_46-jkjYMXQC0rIYeA_0QtPScCUhlx-JOr6pUODN9DZTb8UryMiF1EriaIAvuZr2J5k8eGm7mr6kjqx6Fb3qb_frf4D7zQZfJrdC8KSlqzfccN_NGdaVSuDi7B0OSeWE8Ge75zI7uholoEzA2V2Ov59Sw48TZjZh0B9K7amr6mqNyp60vF0o5_58dcHZeDuSkGtIF7IudlfHkOGjWvQ99JphXbFHHL5Mu_pPCLn4bPDj6sT_6YTxILGuS9Rjo7rfn6LAOlE3L4BLJ523Je9XiC1Pu3AWs-bgc4tAPyoIEV3TjthjGw5pRQVYZh_egoEdBZHqb2JaiZOxlNEsqiCAEUrIgCcaaB-wJR87VQmwoMIvNkCKRNYi3EAKxn9Vq3vFJfbO3lCqmWX-6nEsjjJXLjiA.MwFZHw12q2vcRoaGN5UctQ" },
-                    { epNum: "12", link: "https://cdn.dramalinkbd.tv/p/EwbC_Pujq-e0qF41.BoNLlCjz9RcH9gckyat6Y9jniH3zKYweyl9hFRWJrjir0Ib4wuhzHjPWNoDj2be9BbAe3i6kb_GvWCBN5XQeuFPzH_Rw66Y7OQPIWbWZ6JiPKj-kf99kMu4nRfIQB12iwHZq8CRFcwyldUnnDpDICIjj6ziUdoux0RbkXFRdEO1Q1EJXLf3rHLIm3tgpiNZrfkHvH9tw-_xulg27sfdBSnPM8NZWrrPFVy4wmD1NCysVyrmbtmvCoLdD87JH6fBaB2pJM3e3zDo1M3AHIBUojzLR5dNtbqP92lCQc5r1YjluzzRNjQpLE1fCR3fjF60yK7cetVtyRCIbQRt57on2nFq0sTMHunMSQPLc2-YKiFE_AfBpXGcJ5fJFQTMhxUWIqDeGvgHGX-ZSk1yB3W2amXxMdvBfGTD-PcCmTiMyuBtqkqNR2k58PDv3MQ.Guar-8-4y1RQZGirkQIa8g" }
+                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/wWez0Ni-WxYs6XDx.6K2a6ZDuNWi90OpbhS3iOQf5KRuACA9qZ7VtyfwjWt9o5jl4ruYxqrD7KxEtJisodMcvVxvr7L3-THBSGECeVB8gDQ17l1Gtlebhr-f9J2RFE5wP8H-LJaO4ReN5NpWDTlOeY15JnaeB_Zgs4zFm_YROW8JHrY_2YM614aP4l9w7Z5UBHE6c50t5hjdtwUOAwnEyVUlPuB2S7XH0Zb5kkeRvR6mp3gQiJt4GMbzQlaETfaZyLbbFLTEEXeAJRIED5tPKTsWPHDtZfYFK4PGMcSvPAXDT0R4V08yDsuvFDD1SYVbGmgMEcbxmHHbjWW-1o5W-Vb0HAGmg88ryXipVc9epdeMC8Jt3QMRa-6-tZXGQ8vP4fWiWoX27GICxjZDzZfvUAWWr3kaYq1Mq8WSZUI9EruFvunU5XxJzW58sieUb9Q.C4BIOXZ09R6tSkaHl2ytsg" }
                 ]
-            },
-            {
-                id: 0, title: "The Last Empress", type: "series", isKDrama: true,
-                poster: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=800&q=80", 
-                rating: "7.1", year: "2018", genre: "Korea | Drama",
-                episodes: [ { epNum: "01", link: "https://www.w3schools.com/html/mov_bbb.mp4" } ]
-            },
-            {
-                id: 1, title: "Death of Robin Hood", type: "movie", isKDrama: false,
-                poster: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80",
-                rating: "7.5", year: "2025", genre: "Action | Drama",
-                episodes: [ { epNum: "Movie", link: "https://www.w3schools.com/html/mov_bbb.mp4" } ]
             }
         ];
 
@@ -345,7 +313,10 @@
         const actionIndicator = document.getElementById('action-indicator');
         const controlsOverlay = document.getElementById('custom-controls');
         const heroCarousel = document.getElementById('hero-carousel');
+        let hlsInstance = null;
+        let controlsTimeout;
         
+        // --- Slider Logic ---
         let slideInterval;
         let currentSlide = 0;
         const totalSlides = 2; 
@@ -355,38 +326,12 @@
             slideInterval = setInterval(() => {
                 currentSlide++;
                 if(currentSlide >= totalSlides) currentSlide = 0;
-                
-                heroCarousel.scrollTo({
-                    left: heroCarousel.clientWidth * currentSlide,
-                    behavior: 'smooth'
-                });
+                heroCarousel.scrollTo({ left: heroCarousel.clientWidth * currentSlide, behavior: 'smooth' });
             }, 3500); 
         }
 
         heroCarousel.addEventListener('touchstart', () => clearInterval(slideInterval), {passive: true});
-        heroCarousel.addEventListener('mouseenter', () => clearInterval(slideInterval));
         heroCarousel.addEventListener('touchend', startAutoSlide);
-        heroCarousel.addEventListener('mouseleave', startAutoSlide);
-
-        const dot1 = document.getElementById('dot-1');
-        const dot2 = document.getElementById('dot-2');
-
-        heroCarousel.addEventListener('scroll', () => {
-            const scrollPos = heroCarousel.scrollLeft;
-            const itemWidth = heroCarousel.clientWidth;
-            const newSlide = Math.round(scrollPos / itemWidth);
-            
-            if (newSlide >= 0 && newSlide < totalSlides) {
-                currentSlide = newSlide;
-                if (currentSlide === 0) {
-                    dot1.classList.replace('w-2', 'w-4'); dot1.classList.replace('bg-gray-600', 'bg-white');
-                    dot2.classList.replace('w-4', 'w-2'); dot2.classList.replace('bg-white', 'bg-gray-600');
-                } else {
-                    dot2.classList.replace('w-2', 'w-4'); dot2.classList.replace('bg-gray-600', 'bg-white');
-                    dot1.classList.replace('w-4', 'w-2'); dot1.classList.replace('bg-white', 'bg-gray-600');
-                }
-            }
-        });
 
         function switchTab(viewId) {
             ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
@@ -405,39 +350,33 @@
 
             if(viewId === 'downloads-view') {
                 document.getElementById('nav-downloads').classList.add('nav-active');
-                document.getElementById('dl-badge').classList.add('hidden');
                 loadDownloads();
             }
-            if(viewId !== 'player-view') { video.pause(); updatePlayPauseUI(false); }
+            if(viewId !== 'player-view') { 
+                video.pause(); 
+                if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+            }
         }
 
         function goBack() {
             if (document.fullscreenElement) document.exitFullscreen();
-            if (document.pictureInPictureElement) document.exitPictureInPicture().catch(()=>{});
             switchTab(previousView);
         }
 
         function renderContent() {
-            const movieContainer = document.getElementById('movie-list-container');
             const seriesContainer = document.getElementById('series-list-container');
-            let mCount = 1, sCount = 1;
-
+            seriesContainer.innerHTML = '';
             contentData.forEach((item) => {
-                const isSeries = item.type === "series";
                 const kdramaBadge = item.isKDrama ? `<div class="absolute top-1 left-1 bg-rose-600/90 backdrop-blur text-[9px] px-1.5 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>` : '';
-                
                 const cardHTML = `
                 <div onclick="openPlayer(${item.id}, 'home-view')" class="relative w-[130px] md:w-[160px] shrink-0 cursor-pointer group">
                     <div class="relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-900">
                         <img src="${item.poster}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
                         ${kdramaBadge}
-                        <div class="absolute top-1 right-1 bg-black/60 text-[10px] px-1.5 py-0.5 rounded text-gray-200">${isSeries ? 'Series' : 'Movie'}</div>
-                        <div class="absolute -bottom-3 -left-2 text-[80px] font-black text-white/50 italic leading-none drop-shadow-lg">${isSeries ? sCount++ : mCount++}</div>
                     </div>
                     <h3 class="text-sm font-medium mt-2 truncate text-gray-200">${item.title}</h3>
                 </div>`;
-                if(isSeries) seriesContainer.innerHTML += cardHTML;
-                else movieContainer.innerHTML += cardHTML;
+                seriesContainer.innerHTML += cardHTML;
             });
             loadDownloads();
             startAutoSlide(); 
@@ -458,199 +397,186 @@
             if(currentActiveItem.isKDrama) kdramaBadge.classList.remove('hidden');
             else kdramaBadge.classList.add('hidden');
 
-            const epContainer = document.getElementById('episodes-container');
             const epList = document.getElementById('episodes-list');
             epList.innerHTML = '';
             
-            if (currentActiveItem.type === "series") {
-                epContainer.classList.remove('hidden');
-                currentActiveItem.episodes.forEach((ep, index) => {
-                    const btnClass = index === 0 ? 'border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10' : 'bg-[#1c212a] text-gray-400';
-                    epList.innerHTML += `<button onclick="playEpisode(${index}, this)" class="ep-btn w-full h-10 rounded text-sm font-medium ${btnClass} transition">${ep.epNum}</button>`;
-                });
-            } else {
-                epContainer.classList.add('hidden');
-            }
+            currentActiveItem.episodes.forEach((ep, index) => {
+                const btnClass = index === 0 ? 'border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10' : 'bg-[#1c212a] text-gray-400';
+                epList.innerHTML += `<button onclick="playEpisode(${index}, this)" class="ep-btn w-full h-10 px-2 rounded text-sm font-medium ${btnClass} transition truncate">${ep.epNum}</button>`;
+            });
 
             switchTab('player-view');
             playEpisode(0, null);
         }
 
+        // --- HLS.JS PLAYER LOGIC ---
         function playEpisode(index, btnElement) {
             currentEpIndex = index;
-            video.src = currentActiveItem.episodes[index].link;
-            video.play();
-            updatePlayPauseUI(true);
+            const src = currentActiveItem.episodes[index].link;
+
+            if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
+
+            // Initialize HLS.js
+            if (Hls.isSupported()) {
+                hlsInstance = new Hls();
+                hlsInstance.loadSource(src);
+                hlsInstance.attachMedia(video);
+                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
+                // Fallback if Error
+                hlsInstance.on(Hls.Events.ERROR, function (event, data) {
+                    if (data.fatal) { video.src = src; video.play(); }
+                });
+            } else {
+                video.src = src;
+                video.play();
+            }
 
             if(btnElement) {
-                document.querySelectorAll('.ep-btn').forEach(b => b.className = 'ep-btn w-full h-10 rounded text-sm font-medium bg-[#1c212a] text-gray-400 transition');
-                btnElement.className = 'ep-btn w-full h-10 rounded text-sm font-medium border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10 transition';
+                document.querySelectorAll('.ep-btn').forEach(b => b.className = 'ep-btn w-full h-10 px-2 rounded text-sm font-medium bg-[#1c212a] text-gray-400 transition truncate');
+                btnElement.className = 'ep-btn w-full h-10 px-2 rounded text-sm font-medium border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10 transition truncate';
             }
-            let epText = currentActiveItem.type === 'series' ? ` E${currentActiveItem.episodes[index].epNum}` : "";
+            let epText = ` - ${currentActiveItem.episodes[index].epNum}`;
             document.getElementById('player-title-top').innerText = `${currentActiveItem.title}${epText}`;
+            showControls();
         }
 
-        // --- Skip Features ---
-        function skipVideo(seconds) {
-            video.currentTime += seconds;
-            showPersistentIndicator(seconds > 0 ? '<i class="fa-solid fa-rotate-right"></i>' : '<i class="fa-solid fa-rotate-left"></i>', `${seconds > 0 ? '+10s' : '-10s'}`);
-        }
+        // --- ADVANCED GESTURE SYSTEM ---
+        const gestureLayer = document.getElementById('gesture-layer');
+        let isDragging = false, dragStartX = 0, dragStartY = 0, startVidTime = 0, startVol = 0, dragType = null;
 
-        function startDownload() {
-            const dlId = `${currentActiveItem.id}_${currentEpIndex}`;
-            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
-            
-            if (downloads.find(dl => dl.dlId === dlId)) {
-                showPersistentIndicator('<i class="fa-solid fa-circle-check text-green-500"></i>', 'Already Downloaded');
-                return;
-            }
+        function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
+        function getY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
 
-            actionIndicator.classList.remove('hidden'); actionIndicator.style.opacity = '1';
-            let progress = 0;
-            
-            const dlInterval = setInterval(() => {
-                progress += Math.floor(Math.random() * 20) + 10; 
-                if (progress >= 100) {
-                    clearInterval(dlInterval);
-                    const epText = currentActiveItem.type === 'series' ? ` (Ep ${currentActiveItem.episodes[currentEpIndex].epNum})` : "";
-                    downloads.push({
-                        dlId: dlId, movieId: currentActiveItem.id, title: currentActiveItem.title + epText,
-                        poster: currentActiveItem.poster, link: currentActiveItem.episodes[currentEpIndex].link,
-                        size: (Math.random() * 200 + 100).toFixed(1) + " MB"
-                    });
-                    localStorage.setItem('moviebox_downloads', JSON.stringify(downloads));
-                    
-                    actionIndicator.innerHTML = `<i class="fa-solid fa-circle-check text-green-400"></i> <span class="text-green-400">Saved Offline!</span>`;
-                    document.getElementById('dl-badge').classList.remove('hidden');
-                    setTimeout(() => { actionIndicator.style.opacity = '0'; }, 1500);
-                } else {
-                    actionIndicator.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-[#00e6e6]"></i> <span>Downloading ${progress}%</span>`;
-                }
-            }, 500);
-        }
-
-        function loadDownloads() {
-            const dlContainer = document.getElementById('downloaded-items-container');
-            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
-            
-            if (downloads.length === 0) {
-                dlContainer.innerHTML = `<div class="col-span-full flex flex-col items-center justify-center mt-20 text-gray-500"><i class="fa-solid fa-folder-open text-4xl mb-3"></i><p>No offline videos.</p></div>`;
-                return;
-            }
-            dlContainer.innerHTML = '';
-            downloads.reverse().forEach(dl => {
-                dlContainer.innerHTML += `
-                <div class="bg-[#1a1f29] rounded-xl p-3 flex items-center gap-4 border border-gray-800 shadow-lg">
-                    <div class="relative w-20 md:w-24 aspect-video rounded-lg overflow-hidden shrink-0">
-                        <img src="${dl.poster}" class="w-full h-full object-cover">
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center"><i class="fa-solid fa-play text-white/80"></i></div>
-                    </div>
-                    <div class="flex-1 overflow-hidden cursor-pointer" onclick="openPlayer(${dl.movieId}, 'downloads-view')">
-                        <h4 class="font-bold text-sm truncate text-white">${dl.title}</h4>
-                        <div class="flex items-center gap-2 text-xs text-gray-400 mt-1">
-                            <span class="text-green-500"><i class="fa-solid fa-circle-check"></i> Downloaded</span><span>| ${dl.size}</span>
-                        </div>
-                    </div>
-                    <button onclick="deleteDownload('${dl.dlId}')" class="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center hover:bg-red-500 hover:text-white transition"><i class="fa-solid fa-trash-can"></i></button>
-                </div>`;
-            });
-        }
-
-        function deleteDownload(dlId) {
-            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
-            localStorage.setItem('moviebox_downloads', JSON.stringify(downloads.filter(dl => dl.dlId !== dlId)));
-            loadDownloads();
-        }
-
-        function shareLink() {
-            if (navigator.share) {
-                navigator.share({ title: currentActiveItem.title, text: 'Check out this movie!', url: window.location.href }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(window.location.href);
-                showPersistentIndicator('<i class="fa-solid fa-link"></i>', 'Link Copied!');
-            }
-        }
-
-        function togglePlay() { video.paused ? video.play() : video.pause(); updatePlayPauseUI(!video.paused); }
-        function updatePlayPauseUI(isPlaying) {
-            document.getElementById('play-pause-icon').className = isPlaying ? "fa-solid fa-pause text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]" : "fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100 drop-shadow-[0_0_15px_rgba(0,0,0,0.8)]";
-            document.getElementById('bottom-play-icon').className = isPlaying ? "fa-solid fa-pause text-lg drop-shadow" : "fa-solid fa-play text-lg drop-shadow";
-        }
-        function toggleStretch() {
-            video.classList.toggle('video-contain'); video.classList.toggle('video-cover');
-            document.getElementById('stretch-text').innerText = video.classList.contains('video-cover') ? "Fit" : "Stretch";
-        }
-        function toggleFullscreen() {
-            const wrapper = document.getElementById('video-wrapper');
-            if (!document.fullscreenElement) wrapper.requestFullscreen(); else document.exitFullscreen();
-        }
-        async function togglePiP() {
-            try {
-                if (video !== document.pictureInPictureElement) await video.requestPictureInPicture();
-                else await document.exitPictureInPicture();
-            } catch (err) { showPersistentIndicator('<i class="fa-solid fa-circle-xmark text-red-500"></i>', 'PiP Not Supported'); }
-        }
-
-        function showPersistentIndicator(iconHtml, text) {
-            actionIndicator.innerHTML = `${iconHtml} <span>${text}</span>`;
-            actionIndicator.classList.remove('hidden'); actionIndicator.style.opacity = '1';
-            setTimeout(() => { actionIndicator.style.opacity = '0'; }, 2000);
-        }
-
-        let controlsTimeout;
-        const gestureArea = document.getElementById('gesture-area');
-        
-        function resetControlsTimeout() {
-            clearTimeout(controlsTimeout);
-            controlsOverlay.classList.add('active');
-            controlsOverlay.style.opacity = '1';
-            if (!video.paused) {
-                controlsTimeout = setTimeout(() => {
-                    controlsOverlay.classList.remove('active');
-                    controlsOverlay.style.opacity = '0';
-                }, 3000);
-            }
-        }
-
-        gestureArea.addEventListener('click', (e) => {
-            if (e.target.closest('button') || e.target.closest('input')) return;
-            if (controlsOverlay.style.opacity === '0' || !controlsOverlay.classList.contains('active')) {
-                resetControlsTimeout();
-            } else {
-                clearTimeout(controlsTimeout);
-                controlsOverlay.classList.remove('active');
-                controlsOverlay.style.opacity = '0';
-            }
-        });
-
-        let isDragging = false, startX = 0, startY = 0, dragAction = null;
-        gestureArea.addEventListener('touchstart', e => {
-            if (e.target.closest('button') || e.target.closest('input')) return;
-            isDragging = true; dragAction = null;
-            startX = e.touches[0].clientX; startY = e.touches[0].clientY;
+        gestureLayer.addEventListener('touchstart', (e) => {
+            isDragging = true; dragType = null;
+            dragStartX = getX(e); dragStartY = getY(e);
+            startVidTime = video.currentTime; startVol = video.volume;
         }, {passive: true});
 
-        gestureArea.addEventListener('touchmove', e => {
+        gestureLayer.addEventListener('touchmove', (e) => {
             if(!isDragging) return; 
-            const diffX = e.touches[0].clientX - startX;
-            if(!dragAction && Math.abs(diffX) > 10) { dragAction = 'seek'; video.pause(); }
-            if(dragAction === 'seek') {
+            const diffX = getX(e) - dragStartX;
+            const diffY = getY(e) - dragStartY;
+
+            // Determine if swipe is Horizontal (Seek) or Vertical (Volume)
+            if(!dragType) {
+                if(Math.abs(diffX) > 20) { dragType = 'seek'; video.pause(); }
+                else if (Math.abs(diffY) > 20) { dragType = 'volume'; }
+            }
+
+            if(dragType === 'seek') {
                 e.preventDefault(); 
-                video.currentTime += diffX * 0.1;
+                let newTime = startVidTime + (diffX * 0.3); // 0.3 sensitivity
+                newTime = Math.max(0, Math.min(video.duration || 0, newTime));
+                video.currentTime = newTime;
+                showIndicator('<i class="fa-solid fa-clock"></i>', formatTime(newTime));
+            } else if (dragType === 'volume') {
+                e.preventDefault();
+                let newVol = startVol - (diffY / 200); // Swipe up (negative Y) increases volume
+                newVol = Math.max(0, Math.min(1, newVol));
+                video.volume = newVol;
+                showIndicator('<i class="fa-solid fa-volume-high"></i>', Math.round(newVol * 100) + '%');
             }
         }, {passive: false});
 
-        gestureArea.addEventListener('touchend', e => {
+        gestureLayer.addEventListener('touchend', (e) => {
             isDragging = false; 
-            if(dragAction === 'seek') { video.play(); updatePlayPauseUI(true); }
+            actionIndicator.classList.add('hidden');
+            if(dragType === 'seek') { 
+                video.play(); 
+            } else if (!dragType) {
+                // Was just a tap
+                if (controlsOverlay.style.opacity === '0') showControls();
+                else hideControls();
+            }
+            dragType = null;
         });
 
-        video.addEventListener('play', resetControlsTimeout);
-        video.addEventListener('pause', () => {
+        // PC Mouse Support
+        gestureLayer.addEventListener('mousedown', (e) => {
+            isDragging = true; dragType = null;
+            dragStartX = getX(e); dragStartY = getY(e);
+            startVidTime = video.currentTime; startVol = video.volume;
+        });
+        gestureLayer.addEventListener('mousemove', (e) => {
+            if(!isDragging) return; 
+            const diffX = getX(e) - dragStartX;
+            const diffY = getY(e) - dragStartY;
+            if(!dragType) {
+                if(Math.abs(diffX) > 20) { dragType = 'seek'; video.pause(); }
+                else if (Math.abs(diffY) > 20) { dragType = 'volume'; }
+            }
+            if(dragType === 'seek') {
+                let newTime = startVidTime + (diffX * 0.3); 
+                newTime = Math.max(0, Math.min(video.duration || 0, newTime));
+                video.currentTime = newTime;
+                showIndicator('<i class="fa-solid fa-clock"></i>', formatTime(newTime));
+            } else if (dragType === 'volume') {
+                let newVol = startVol - (diffY / 200); 
+                newVol = Math.max(0, Math.min(1, newVol));
+                video.volume = newVol;
+                showIndicator('<i class="fa-solid fa-volume-high"></i>', Math.round(newVol * 100) + '%');
+            }
+        });
+        gestureLayer.addEventListener('mouseup', () => {
+            isDragging = false; actionIndicator.classList.add('hidden');
+            if(dragType === 'seek') video.play();
+            else if (!dragType) { controlsOverlay.style.opacity === '0' ? showControls() : hideControls(); }
+            dragType = null;
+        });
+
+        function showIndicator(iconHtml, text) {
+            actionIndicator.innerHTML = `${iconHtml} <span>${text}</span>`;
+            actionIndicator.classList.remove('hidden'); 
+        }
+
+        // --- UI & BUTTONS ---
+        function togglePlay() { video.paused ? video.play() : video.pause(); showControls(); }
+        
+        function updatePlayPauseUI(isPlaying) {
+            document.getElementById('center-play-icon').className = isPlaying ? "hidden" : "fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100";
+            document.getElementById('bottom-play-icon').className = isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+        }
+
+        function toggleStretch() {
+            video.classList.toggle('video-contain'); 
+            video.classList.toggle('video-cover');
+            document.getElementById('stretch-icon').className = video.classList.contains('video-cover') ? "fa-solid fa-compress" : "fa-solid fa-expand";
+        }
+
+        function toggleFullscreen() {
+            const playerView = document.getElementById('player-view');
+            if (!document.fullscreenElement) {
+                playerView.requestFullscreen().catch(err => console.log(err));
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // Handle Fullscreen UI updates
+        document.addEventListener('fullscreenchange', () => {
+            const icon = document.getElementById('fullscreen-icon');
+            icon.className = document.fullscreenElement ? "fa-solid fa-compress" : "fa-solid fa-expand";
+        });
+
+        function showControls() {
             clearTimeout(controlsTimeout);
-            controlsOverlay.classList.add('active'); controlsOverlay.style.opacity = '1';
-        });
+            controlsOverlay.style.opacity = '1';
+            controlsOverlay.classList.remove('pointer-events-none');
+            if (!video.paused) {
+                controlsTimeout = setTimeout(hideControls, 3000);
+            }
+        }
+        function hideControls() {
+            if(!video.paused) {
+                controlsOverlay.style.opacity = '0';
+                controlsOverlay.classList.add('pointer-events-none');
+            }
+        }
 
+        // Video Events
+        video.addEventListener('play', () => { updatePlayPauseUI(true); showControls(); });
+        video.addEventListener('pause', () => { updatePlayPauseUI(false); showControls(); });
         video.addEventListener('timeupdate', () => {
             if(video.duration) {
                 document.getElementById('progress-bar').value = (video.currentTime / video.duration) * 100;
@@ -661,12 +587,46 @@
 
         document.getElementById('progress-bar').addEventListener('input', (e) => {
             video.currentTime = (e.target.value / 100) * video.duration;
-            resetControlsTimeout();
+            showControls();
         });
 
         function formatTime(s) {
             if (isNaN(s)) return "00:00";
             return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
+        }
+
+        // Download System
+        function startDownload() {
+            const dlId = `${currentActiveItem.id}_${currentEpIndex}`;
+            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
+            if (downloads.find(dl => dl.dlId === dlId)) { alert('Already Downloaded!'); return; }
+            downloads.push({
+                dlId: dlId, movieId: currentActiveItem.id, title: currentActiveItem.title,
+                poster: currentActiveItem.poster, link: currentActiveItem.episodes[currentEpIndex].link, size: "450 MB"
+            });
+            localStorage.setItem('moviebox_downloads', JSON.stringify(downloads));
+            alert('Saved to Downloads!');
+            document.getElementById('dl-badge').classList.remove('hidden');
+        }
+
+        function loadDownloads() {
+            const dlContainer = document.getElementById('downloaded-items-container');
+            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
+            if (downloads.length === 0) {
+                dlContainer.innerHTML = `<p class="text-center text-gray-500 mt-10">No offline videos.</p>`;
+                return;
+            }
+            dlContainer.innerHTML = '';
+            downloads.reverse().forEach(dl => {
+                dlContainer.innerHTML += `
+                <div class="bg-[#1a1f29] rounded-xl p-3 flex items-center gap-4 border border-gray-800 shadow-lg">
+                    <img src="${dl.poster}" class="w-20 h-14 rounded-lg object-cover">
+                    <div class="flex-1 overflow-hidden" onclick="openPlayer(${dl.movieId}, 'downloads-view')">
+                        <h4 class="font-bold text-sm text-white truncate">${dl.title}</h4>
+                        <p class="text-xs text-green-500 mt-1">Downloaded</p>
+                    </div>
+                </div>`;
+            });
         }
 
         window.onload = renderContent;
