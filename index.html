@@ -1,635 +1,327 @@
-<!DOCTYPE html>
-<html lang="bn">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="theme-color" content="#0b0f16">
-    <title>Movie Box - Streaming Platform</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- HLS.js Library -->
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
-    
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-        
-        body {
-            background-color: #0b0f16; color: #ffffff;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-        }
-        
-        .app-container {
-            width: 100%; max-width: 1280px; margin: 0 auto;
-            background-color: #0b0f16; min-height: 100vh;
-            position: relative; box-shadow: 0 0 20px rgba(0,0,0,0.5);
-            overflow-x: hidden;
-        }
+<meta charset="UTF-8">
 
-        /* Perfect Fullscreen */
-        #player-view:fullscreen, #player-view:-webkit-full-screen {
-            width: 100vw !important;
-            height: 100vh !important;
-            max-width: none !important;
-            background-color: #000;
-        }
+<style>
+  .app-download-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    background-color: #ffffff;
+    max-width: 500px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+  }
+  .app-icon img {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  .app-details h4 {
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .app-tags {
+    display: flex;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+  .badge.size {
+    background: #f1f5f9;
+    color: #64748b;
+  }
 
-        /* Custom Range Slider */
-        input[type=range] { -webkit-appearance: none; width: 100%; background: transparent; pointer-events: auto; }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; height: 16px; width: 16px; border-radius: 50%;
-            background: #00e6e6; cursor: pointer; margin-top: -6px; box-shadow: 0 0 8px rgba(0,230,230,0.8);
-        }
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 4px; cursor: pointer; background: rgba(255, 255, 255, 0.3); border-radius: 2px;
-        }
-        
-        .video-contain { object-fit: contain; }
-        .video-cover { object-fit: cover; }
-        .nav-active { color: #22c55e !important; }
+  /* ভেরিফিকেশন কার্ড */
+  .ad-verify-container {
+    margin-top: 18px;
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+  }
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #92400e;
+  }
+  .step-badge {
+    background: #fde68a;
+    color: #78350f;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .verify-desc {
+    font-size: 13px;
+    color: #475569;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
 
-        .snap-x { scroll-snap-type: x mandatory; }
-        .snap-center { scroll-snap-align: center; }
-        #hero-carousel { scroll-behavior: smooth; }
-        
-        /* Prevent Default Scrolling on Video */
-        #gesture-layer { touch-action: none; }
-        
-        /* Hide default video controls */
-        video::-webkit-media-controls { display: none !important; }
-        video { outline: none; }
-    </style>
-</head>
-<body class="flex justify-center bg-gray-900">
+  /* ওয়ার্নিং মেসেজ বক্স */
+  .warning-box {
+    display: none;
+    background: #fee2e2;
+    border: 1px solid #f87171;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
 
-    <div class="app-container">
+  /* টাইমার ও প্রগ্রেস বার */
+  .timer-container {
+    display: none;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .timer-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ea580c;
+    margin-bottom: 6px;
+  }
+  .progress-bg {
+    width: 100%;
+    height: 8px;
+    background: #fed7aa;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #ea580c;
+    transition: width 1s linear;
+  }
 
-        <!-- ==========================================
-             HOME VIEW
-        =========================================== -->
-        <div id="home-view" class="block pb-24">
-            <header class="pt-4 pb-2 px-4 sticky top-0 bg-[#0b0f16]/95 backdrop-blur-md z-40">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-green-400 to-blue-500 flex items-center justify-center shrink-0 shadow-lg">
-                        <i class="fa-solid fa-play text-white text-xs ml-0.5"></i>
-                    </div>
-                    <div class="flex-1 bg-[#1a1f29] rounded-full flex items-center px-4 py-2 border border-gray-800 max-w-2xl">
-                        <i class="fa-solid fa-magnifying-glass text-gray-500 text-sm mr-2"></i>
-                        <input type="text" placeholder="Search movies, series..." class="bg-transparent border-none outline-none text-sm text-gray-200 w-full placeholder-gray-500">
-                    </div>
-                </div>
-                <nav class="flex items-center gap-5 mt-4 overflow-x-auto no-scrollbar text-[15px] font-medium text-gray-400 border-b border-gray-800 pb-1">
-                    <a href="#" class="text-white font-bold whitespace-nowrap shrink-0 relative pb-1">Trending<span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-[3px] bg-white rounded-full"></span></a>
-                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">Movie</a>
-                    <a href="#" class="whitespace-nowrap shrink-0 hover:text-white transition">TV Series</a>
-                </nav>
-            </header>
+  /* বাটন স্টাইল */
+  .verify-btn {
+    display: block !important;
+    width: 100% !important;
+    padding: 14px !important;
+    text-align: center !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    text-decoration: none !important;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .btn-ad {
+    background-color: #f97316 !important;
+    color: #ffffff !important;
+  }
+  .btn-ad:hover {
+    background-color: #ea580c !important;
+  }
+  .btn-download {
+    background-color: #0284c7 !important;
+    color: #ffffff !important;
+  }
+  .btn-download:hover {
+    background-color: #0369a1 !important;
+  }
+  .btn-locked {
+    background-color: #cbd5e1 !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+  }
+</style>
 
-            <main>
-                <!-- Hero Banner Carousel -->
-                <section class="mt-2 md:mt-4 w-full overflow-hidden md:px-4">
-                    <div class="flex overflow-x-auto snap-x no-scrollbar w-full md:rounded-2xl" id="hero-carousel">
-                        
-                        <!-- Hero Item: Bachelor Point -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] sm:aspect-video md:aspect-[3/1] lg:aspect-[4/1] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(7)">
-                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-125">
-                            <div class="absolute inset-0 w-full h-full flex justify-center items-center z-10 py-0 md:py-4">
-                                <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" loading="lazy" class="w-full h-full object-cover md:object-contain md:rounded-lg shadow-2xl">
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
-                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
-                                    <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg" class="w-10 h-14 rounded-lg object-cover">
-                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">Bachelor Point</h4></div>
-                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
-                                </div>
-                            </div>
-                        </div>
+<div class="app-download-box">
+  <div class="app-header">
+    <div class="app-icon">
+      <img alt="App Icon" src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxlMJI9cVisUnAAirr_X4NHhMHcm1RJXMD0M5dZdpCEKcfvvUiq4kcePuzVNnFyvyjoLkv6cIKY8Zf1N1VNvQ.Wc-&amp;format=source" />
+    </div>
+    <div class="app-details">
+      <h4>Moviebox</h4>
+      <div class="app-tags">
+        <span class="badge">v1.0</span>
+        <span class="badge size">Size: 15 MB</span>
+      </div>
+    </div>
+  </div>
 
-                        <!-- Hero Item: Mad Concrete Dreams -->
-                        <div class="relative w-full shrink-0 snap-center aspect-[4/3] sm:aspect-video md:aspect-[3/1] lg:aspect-[4/1] cursor-pointer bg-black overflow-hidden" onclick="openPlayer(5)">
-                            <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="absolute inset-0 w-full h-full object-cover opacity-30 blur-2xl scale-125">
-                            <div class="absolute inset-0 w-full h-full flex justify-center items-center z-10 py-0 md:py-4">
-                                <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" loading="lazy" class="w-full h-full object-cover md:object-contain md:rounded-lg shadow-2xl">
-                            </div>
-                            <div class="absolute inset-0 bg-gradient-to-t from-[#0b0f16] via-[#0b0f16]/30 to-transparent z-10"></div>
-                            <div class="absolute top-2 left-3 bg-rose-600/90 backdrop-blur text-[10px] px-2 py-0.5 rounded text-white font-bold tracking-wider z-20">KDRAMA</div>
-                            <div class="absolute bottom-4 left-0 w-full px-4 flex gap-3 md:max-w-md z-20">
-                                <div class="bg-[#1a1f29]/90 backdrop-blur-md rounded-xl p-2 flex items-center gap-3 w-full border border-gray-700/50 shadow-lg">
-                                    <img src="https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg" class="w-10 h-14 rounded-lg object-cover">
-                                    <div class="flex-1"><h4 class="text-sm font-semibold truncate">Mad Concrete Dreams</h4></div>
-                                    <div class="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center text-white text-xs shrink-0"><i class="fa-solid fa-play ml-0.5"></i></div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </section>
-
-                <section class="mt-6 pb-6">
-                    <div class="flex items-center justify-between px-4 mb-4">
-                        <h2 class="text-lg md:text-xl font-bold border-l-4 border-green-500 pl-2">Trending TV Series</h2>
-                    </div>
-                    <div id="series-list-container" class="flex gap-4 px-4 overflow-x-auto no-scrollbar pb-2"></div>
-                </section>
-            </main>
-        </div>
-
-        <!-- ==========================================
-             DOWNLOADS VIEW
-        =========================================== -->
-        <div id="downloads-view" class="hidden pb-24 min-h-screen">
-            <header class="pt-6 pb-4 px-4 sticky top-0 bg-[#0b0f16]/95 backdrop-blur-md z-40 border-b border-gray-800">
-                <h1 class="text-2xl font-bold">My Downloads</h1>
-                <p class="text-xs text-gray-400 mt-1">Watch your saved movies offline</p>
-            </header>
-            <main class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="downloaded-items-container"></main>
-        </div>
-
-        <!-- ==========================================
-             BOTTOM NAVIGATION
-        =========================================== -->
-        <nav class="fixed bottom-0 w-full max-w-[1280px] bg-[#111620]/95 backdrop-blur-lg border-t border-gray-800 flex justify-around py-3 px-2 z-50">
-            <a href="#" onclick="switchTab('home-view')" id="nav-home" class="nav-active flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition w-full">
-                <i class="fa-solid fa-house text-xl"></i>
-                <span class="text-[10px] md:text-xs font-medium">Home</span>
-            </a>
-            <a href="#" onclick="switchTab('downloads-view')" id="nav-downloads" class="flex flex-col items-center gap-1 text-gray-500 hover:text-green-500 transition w-full">
-                <i class="fa-solid fa-arrow-down-to-bracket text-xl relative">
-                    <span id="dl-badge" class="hidden absolute -top-1 -right-2 bg-red-500 text-white text-[8px] font-bold px-1 rounded-full animate-bounce">New</span>
-                </i>
-                <span class="text-[10px] md:text-xs font-medium">Downloads</span>
-            </a>
-        </nav>
-
-        <!-- ==========================================
-             HLS.JS CUSTOM PLAYER VIEW (FIXED)
-        =========================================== -->
-        <div id="player-view" class="hidden fixed inset-0 bg-black z-[100] flex flex-col">
-            <!-- Video Container -->
-            <div class="relative w-full flex-1 bg-black flex justify-center items-center overflow-hidden" id="video-container">
-                
-                <!-- Main Video Element -->
-                <video id="mainVideo" class="w-full h-full video-contain" playsinline preload="auto"></video>
-
-                <!-- Gesture Layer (Swipe Left/Right, Up/Down) -->
-                <div id="gesture-layer" class="absolute inset-0 z-10 cursor-pointer"></div>
-                
-                <!-- Center Action Indicator (Time / Volume) -->
-                <div id="action-indicator" class="hidden absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-40 bg-black/70 backdrop-blur-md text-white px-6 py-4 rounded-xl text-2xl font-bold pointer-events-none flex items-center gap-3 shadow-2xl">
-                </div>
-
-                <!-- Custom Controls UI -->
-                <div id="custom-controls" class="absolute inset-0 z-30 flex flex-col justify-between pointer-events-none opacity-100 transition-opacity duration-300">
-                    
-                    <!-- Top Bar -->
-                    <div class="w-full flex items-center justify-between p-4 bg-gradient-to-b from-black/90 via-black/40 to-transparent pointer-events-auto">
-                        <div class="flex items-center gap-4">
-                            <button onclick="goBack()" class="text-white hover:text-[#00e6e6] p-2 transition drop-shadow text-2xl"><i class="fa-solid fa-arrow-left"></i></button>
-                            <span id="player-title-top" class="text-base sm:text-lg font-bold text-white drop-shadow-md">Loading...</span>
-                        </div>
-                    </div>
-
-                    <!-- Center Big Play/Pause Button -->
-                    <div class="flex-1 flex items-center justify-center pointer-events-none">
-                        <button id="center-play-btn" onclick="togglePlay()" class="pointer-events-auto text-white transform hover:scale-110 transition w-24 h-24 flex items-center justify-center drop-shadow-2xl z-50">
-                            <i id="center-play-icon" class="fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100"></i>
-                        </button>
-                    </div>
-
-                    <!-- Bottom Control Bar -->
-                    <div class="w-full bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-auto px-4 pb-6 pt-16 flex flex-col justify-end">
-                        
-                        <!-- Progress Bar Area -->
-                        <div class="flex items-center gap-3 w-full mb-4 z-50">
-                            <span id="current-time" class="text-sm text-white/90 font-medium w-12 text-right">00:00</span>
-                            <input type="range" id="progress-bar" value="0" step="0.1" class="flex-1 cursor-pointer">
-                            <span id="duration-time" class="text-sm text-white/90 font-medium w-12">00:00</span>
-                        </div>
-                        
-                        <!-- Bottom Buttons -->
-                        <div class="flex items-center justify-between text-white w-full z-50 px-2">
-                            <!-- Left: Play/Pause -->
-                            <div class="flex items-center gap-6">
-                                <button onclick="togglePlay()" class="hover:text-[#00e6e6] transition text-xl"><i id="bottom-play-icon" class="fa-solid fa-play"></i></button>
-                            </div>
-                            
-                            <!-- Right: Stretch & Fullscreen -->
-                            <div class="flex items-center gap-6 text-xl">
-                                <button onclick="toggleStretch()" class="hover:text-[#00e6e6] transition drop-shadow" title="Stretch / Fit"><i id="stretch-icon" class="fa-solid fa-expand"></i></button>
-                                <button onclick="toggleFullscreen()" class="hover:text-[#00e6e6] transition drop-shadow" title="Fullscreen"><i id="fullscreen-icon" class="fa-solid fa-compress"></i></button>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-
-            <!-- Details Section Below Video -->
-            <div class="bg-[#0b0f16] flex-1 overflow-y-auto pb-10">
-                <section class="p-4 max-w-4xl mx-auto" id="info-section">
-                    <div>
-                        <h1 id="player-title" class="text-2xl md:text-3xl font-bold mb-2">Title</h1>
-                        <div class="flex flex-wrap items-center gap-2 text-xs md:text-sm text-gray-400 font-medium mb-4">
-                            <span id="player-kdrama-badge" class="hidden bg-rose-600 text-white px-2 py-0.5 rounded text-[10px] md:text-xs font-bold tracking-wider">KDRAMA</span>
-                            <span class="text-amber-500"><i class="fa-solid fa-star text-[10px] md:text-xs"></i> <span id="player-rating">0.0</span></span>
-                            <span>|</span><span id="player-year">YYYY</span>
-                            <span>|</span><span id="player-genre">Category</span>
-                        </div>
-                        <p id="player-desc" class="text-sm text-gray-400 mb-6"></p>
-                    </div>
-
-                    <div class="grid grid-cols-4 md:flex md:gap-4 gap-2 border-b border-gray-800 pb-5">
-                        <button class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-plus text-sm"></i> Add to list
-                        </button>
-                        <button onclick="shareLink()" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-share-nodes text-sm"></i> Share
-                        </button>
-                        <button onclick="startDownload()" class="bg-[#1c212a] hover:bg-[#00e6e6]/20 text-[#00e6e6] py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-bold flex flex-col items-center justify-center gap-1.5 transition border border-[#00e6e6]/30">
-                            <i class="fa-solid fa-download text-sm"></i> Download
-                        </button>
-                        <button onclick="switchTab('downloads-view')" class="bg-[#1c212a] hover:bg-gray-700 text-gray-200 py-2 md:px-6 rounded-lg text-[11px] md:text-sm font-medium flex flex-col items-center justify-center gap-1.5 transition">
-                            <i class="fa-solid fa-file-arrow-down text-sm"></i> View Dls
-                        </button>
-                    </div>
-
-                    <div class="pt-4 pb-2 border-b border-gray-800">
-                        <div class="flex items-center gap-2 mb-4">
-                            <h3 class="font-bold text-lg md:text-xl">Episodes</h3>
-                        </div>
-                        <div id="episodes-container" class="mt-4">
-                            <div id="episodes-list" class="grid grid-cols-3 sm:grid-cols-6 gap-2.5"></div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-        </div>
+  <div class="ad-verify-container">
+    <div class="step-indicator">
+      <span class="step-title" id="stepTitle">বিজ্ঞাপন ভেরিফিকেশন (ধাপ ১/২)</span>
+      <span class="step-badge" id="stepBadge">Step 1 of 2</span>
     </div>
 
-    <!-- ==========================================
-         JAVASCRIPT DATA & LOGIC
-    =========================================== -->
-    <script>
-        // Database
-        const contentData = [
-            {
-                id: 7,
-                title: "Bachelor Point (2026)", type: "series", isKDrama: false,
-                poster: "https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_wm7n1787231362.jpg",
-                rating: "8.5/10", year: "2026", genre: "Comedy, Drama",
-                desc: "A story of friends living together in a bachelor point. Language: Bangla | Quality: WEB-DL",
-                episodes: [
-                    { epNum: "Ep 105-112", link: "https://pub-538edaef4a1246c989cd0c69ae08ce40.r2.dev/media/csYdVqmU/main?token=1787270400-45d2a0bfe7e8bb8902f136896c3b20e3778a52e3" }
-                ]
-            },
-            {
-                id: 5,
-                title: "Mad Concrete Dreams", type: "series", isKDrama: true,
-                poster: "https://pub-69b6234af505413bbeac2bbc8039195c.r2.dev/poster_azeh1787004530.jpg",
-                rating: "8.3/10", year: "2026", genre: "Crime, Comedy, Drama",
-                desc: "A gripping tale of love and crime in a concrete jungle.",
-                episodes: [
-                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/TkiDeUri225cxgCO.oaUSTknUsZxHpQmmmHF1e24BO0o_E2QUUurOf4WN1EWnBXIh47C5zMXUYvWiOGEvP4UIUn12rw9L3dEIMNMIBDZf578njKmhZX7tbrJ9mlx_bAMrZ-XjIBpVlU2igojcwn6GHEo4G0atrSxRQkJCNGeF6R8BOQzhl6EpwD7zqeF7hdAEHzznutaOEsy-j45SKNQA8vM0R7Dvz0_bRNaKZxo6CASqcsFzWR51g8peR1bGkhLNgqnn-w_ilOKExYCJu8_q2VGN7PWBu3g9hsVHsn4RS_1i8V7AdQMuoZQTGC_qjMkOZFN8Co6QFuPjBYnfv22BiLjV6CJmuCAVVe5sjehl0-m4NjlG4y-XvaQiq9yR4kCQ316MRwHP74ywc9zgYGxfZlqYf6x_0asGQrCSboi7VAClWJqVeSGfghI.wA3d38jjwgem9qBcrRlCUg" }
-                ]
-            },
-            {
-                id: 6,
-                title: "The Legend of Kitchen Soldier", type: "series", isKDrama: true,
-                poster: "https://image.tmdb.org/t/p/original/nmYgPJiZebWUtL6D72D0Qp9ce0H.jpg",
-                rating: "8.0/10", year: "2026", genre: "Comedy, Drama, Fantasy",
-                desc: "Kang Seong Jae is a soldier and gets transferred to the Gangrim Post.",
-                episodes: [
-                    { epNum: "01", link: "https://cdn.dramalinkbd.tv/p/wWez0Ni-WxYs6XDx.6K2a6ZDuNWi90OpbhS3iOQf5KRuACA9qZ7VtyfwjWt9o5jl4ruYxqrD7KxEtJisodMcvVxvr7L3-THBSGECeVB8gDQ17l1Gtlebhr-f9J2RFE5wP8H-LJaO4ReN5NpWDTlOeY15JnaeB_Zgs4zFm_YROW8JHrY_2YM614aP4l9w7Z5UBHE6c50t5hjdtwUOAwnEyVUlPuB2S7XH0Zb5kkeRvR6mp3gQiJt4GMbzQlaETfaZyLbbFLTEEXeAJRIED5tPKTsWPHDtZfYFK4PGMcSvPAXDT0R4V08yDsuvFDD1SYVbGmgMEcbxmHHbjWW-1o5W-Vb0HAGmg88ryXipVc9epdeMC8Jt3QMRa-6-tZXGQ8vP4fWiWoX27GICxjZDzZfvUAWWr3kaYq1Mq8WSZUI9EruFvunU5XxJzW58sieUb9Q.C4BIOXZ09R6tSkaHl2ytsg" }
-                ]
-            }
-        ];
+    <p class="verify-desc" id="stepDesc">
+      মূল ডাউনলোড লিংক পেতে ১ম বিজ্ঞাপনে ক্লিক করে ৩০ সেকেন্ড অপেক্ষা করুন।
+    </p>
 
-        let currentActiveItem = null, currentEpIndex = 0, previousView = 'home-view';
-        const video = document.getElementById('mainVideo');
-        const actionIndicator = document.getElementById('action-indicator');
-        const controlsOverlay = document.getElementById('custom-controls');
-        const heroCarousel = document.getElementById('hero-carousel');
-        let hlsInstance = null;
-        let controlsTimeout;
+    <!-- ওয়ার্নিং নোটিশ (বিজ্ঞাপন না দেখলে প্রদর্শিত হবে) -->
+    <div class="warning-box" id="warningBox">
+      ⚠️ <b>সতর্কতা:</b> আপনি পুরো ৩০ সেকেন্ড বিজ্ঞাপনটি দেখেননি অথবা পেজটি বন্ধ করে দিয়েছেন! ডাউনলোড লিংক পেতে অনুগ্রহ করে আবার চেষ্টা করুন।
+    </div>
+
+    <!-- টাইমার ও প্রগ্রেস বার -->
+    <div class="timer-container" id="timerBox">
+      <div class="timer-text">বিজ্ঞাপন পেজটি চালু রাখুন: <span id="countdown">30</span> সেকেন্ড</div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- ইন্টারঅ্যাকশন বাটন -->
+    <button type="button" id="mainBtn" class="verify-btn btn-ad" onclick="processStep()">
+      ১ম বিজ্ঞাপন দেখুন (৩০ সেকেন্ড অপেক্ষা করুন)
+    </button>
+  </div>
+</div>
+
+<script>
+  // কনফিগারেশন
+  var AD_1 = "https://www.profitableratecpmnetwork.com/sctumitqju?key=03700210ccb7ee3503a9ed08eccb3254"; 
+  var AD_2 = "https://www.profitableratecpmnetwork.com/sctumitqju?key=03700210ccb7ee3503a9ed08eccb3254"; 
+  var FINAL_DOWNLOAD = "https://drive.google.com/file/d/15ezcnXEqr3tqnUt19vJ_FLjMC3jOGi3g/view?usp=drive_link"; 
+  var REQUIRED_SECONDS = 30; // ৩০ সেকেন্ডের ভেরিফিকেশন
+
+  var step = 1;
+  var isRunning = false;
+  var timerInterval = null;
+  var startTime = 0;
+  var remainingSeconds = REQUIRED_SECONDS;
+
+  function showWarning(msg) {
+    var warningEl = document.getElementById('warningBox');
+    if (msg) warningEl.innerHTML = msg;
+    warningEl.style.display = 'block';
+  }
+
+  function hideWarning() {
+    document.getElementById('warningBox').style.display = 'none';
+  }
+
+  function processStep() {
+    if (isRunning) return;
+    hideWarning();
+
+    if (step === 1) {
+      window.open(AD_1, '_blank');
+      startVerification(function() {
+        step = 2;
+        document.getElementById('stepTitle').innerHTML = "বিজ্ঞাপন ভেরিফিকেশন (ধাপ ২/২)";
+        document.getElementById('stepBadge').innerText = "Step 2 of 2";
+        document.getElementById('stepDesc').innerHTML = "অভিনন্দন! এবার ২য় বিজ্ঞাপনে ক্লিক করে শেষ ৩০ সেকেন্ড অপেক্ষা করুন।";
         
-        // --- Slider Logic ---
-        let slideInterval;
-        let currentSlide = 0;
-        const totalSlides = 2; 
-
-        function startAutoSlide() {
-            clearInterval(slideInterval); 
-            slideInterval = setInterval(() => {
-                currentSlide++;
-                if(currentSlide >= totalSlides) currentSlide = 0;
-                heroCarousel.scrollTo({ left: heroCarousel.clientWidth * currentSlide, behavior: 'smooth' });
-            }, 3500); 
-        }
-
-        heroCarousel.addEventListener('touchstart', () => clearInterval(slideInterval), {passive: true});
-        heroCarousel.addEventListener('touchend', startAutoSlide);
-
-        function switchTab(viewId) {
-            ['home-view', 'downloads-view', 'player-view'].forEach(id => document.getElementById(id).classList.add('hidden'));
-            document.getElementById(viewId).classList.remove('hidden');
-            window.scrollTo(0, 0);
-
-            document.getElementById('nav-home').classList.remove('nav-active');
-            document.getElementById('nav-downloads').classList.remove('nav-active');
-            
-            if(viewId === 'home-view') {
-                document.getElementById('nav-home').classList.add('nav-active');
-                startAutoSlide(); 
-            } else {
-                clearInterval(slideInterval); 
-            }
-
-            if(viewId === 'downloads-view') {
-                document.getElementById('nav-downloads').classList.add('nav-active');
-                loadDownloads();
-            }
-            if(viewId !== 'player-view') { 
-                video.pause(); 
-                if(hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-            }
-        }
-
-        function goBack() {
-            if (document.fullscreenElement) document.exitFullscreen();
-            switchTab(previousView);
-        }
-
-        function renderContent() {
-            const seriesContainer = document.getElementById('series-list-container');
-            seriesContainer.innerHTML = '';
-            contentData.forEach((item) => {
-                const kdramaBadge = item.isKDrama ? `<div class="absolute top-1 left-1 bg-rose-600/90 backdrop-blur text-[9px] px-1.5 py-0.5 rounded text-white font-bold tracking-wider shadow-md">KDRAMA</div>` : '';
-                const cardHTML = `
-                <div onclick="openPlayer(${item.id}, 'home-view')" class="relative w-[130px] md:w-[160px] shrink-0 cursor-pointer group">
-                    <div class="relative aspect-[2/3] rounded-lg overflow-hidden bg-gray-900">
-                        <img src="${item.poster}" loading="lazy" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300">
-                        ${kdramaBadge}
-                    </div>
-                    <h3 class="text-sm font-medium mt-2 truncate text-gray-200">${item.title}</h3>
-                </div>`;
-                seriesContainer.innerHTML += cardHTML;
-            });
-            loadDownloads();
-            startAutoSlide(); 
-        }
-
-        function openPlayer(id, fromView = 'home-view') {
-            previousView = fromView;
-            currentActiveItem = contentData.find(item => item.id === id);
-            
-            document.getElementById('player-title').innerText = currentActiveItem.title;
-            document.getElementById('player-rating').innerText = currentActiveItem.rating;
-            document.getElementById('player-year').innerText = currentActiveItem.year;
-            document.getElementById('player-genre').innerText = currentActiveItem.genre;
-            document.getElementById('player-desc').innerText = currentActiveItem.desc || "";
-            video.poster = currentActiveItem.poster;
-
-            const kdramaBadge = document.getElementById('player-kdrama-badge');
-            if(currentActiveItem.isKDrama) kdramaBadge.classList.remove('hidden');
-            else kdramaBadge.classList.add('hidden');
-
-            const epList = document.getElementById('episodes-list');
-            epList.innerHTML = '';
-            
-            currentActiveItem.episodes.forEach((ep, index) => {
-                const btnClass = index === 0 ? 'border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10' : 'bg-[#1c212a] text-gray-400';
-                epList.innerHTML += `<button onclick="playEpisode(${index}, this)" class="ep-btn w-full h-10 px-2 rounded text-sm font-medium ${btnClass} transition truncate">${ep.epNum}</button>`;
-            });
-
-            switchTab('player-view');
-            playEpisode(0, null);
-        }
-
-        // --- HLS.JS PLAYER LOGIC ---
-        function playEpisode(index, btnElement) {
-            currentEpIndex = index;
-            const src = currentActiveItem.episodes[index].link;
-
-            if (hlsInstance) { hlsInstance.destroy(); hlsInstance = null; }
-
-            // Initialize HLS.js
-            if (Hls.isSupported()) {
-                hlsInstance = new Hls();
-                hlsInstance.loadSource(src);
-                hlsInstance.attachMedia(video);
-                hlsInstance.on(Hls.Events.MANIFEST_PARSED, function() { video.play(); });
-                // Fallback if Error
-                hlsInstance.on(Hls.Events.ERROR, function (event, data) {
-                    if (data.fatal) { video.src = src; video.play(); }
-                });
-            } else {
-                video.src = src;
-                video.play();
-            }
-
-            if(btnElement) {
-                document.querySelectorAll('.ep-btn').forEach(b => b.className = 'ep-btn w-full h-10 px-2 rounded text-sm font-medium bg-[#1c212a] text-gray-400 transition truncate');
-                btnElement.className = 'ep-btn w-full h-10 px-2 rounded text-sm font-medium border border-[#00e6e6] text-[#00e6e6] bg-[#00e6e6]/10 transition truncate';
-            }
-            let epText = ` - ${currentActiveItem.episodes[index].epNum}`;
-            document.getElementById('player-title-top').innerText = `${currentActiveItem.title}${epText}`;
-            showControls();
-        }
-
-        // --- ADVANCED GESTURE SYSTEM ---
-        const gestureLayer = document.getElementById('gesture-layer');
-        let isDragging = false, dragStartX = 0, dragStartY = 0, startVidTime = 0, startVol = 0, dragType = null;
-
-        function getX(e) { return e.touches ? e.touches[0].clientX : e.clientX; }
-        function getY(e) { return e.touches ? e.touches[0].clientY : e.clientY; }
-
-        gestureLayer.addEventListener('touchstart', (e) => {
-            isDragging = true; dragType = null;
-            dragStartX = getX(e); dragStartY = getY(e);
-            startVidTime = video.currentTime; startVol = video.volume;
-        }, {passive: true});
-
-        gestureLayer.addEventListener('touchmove', (e) => {
-            if(!isDragging) return; 
-            const diffX = getX(e) - dragStartX;
-            const diffY = getY(e) - dragStartY;
-
-            // Determine if swipe is Horizontal (Seek) or Vertical (Volume)
-            if(!dragType) {
-                if(Math.abs(diffX) > 20) { dragType = 'seek'; video.pause(); }
-                else if (Math.abs(diffY) > 20) { dragType = 'volume'; }
-            }
-
-            if(dragType === 'seek') {
-                e.preventDefault(); 
-                let newTime = startVidTime + (diffX * 0.3); // 0.3 sensitivity
-                newTime = Math.max(0, Math.min(video.duration || 0, newTime));
-                video.currentTime = newTime;
-                showIndicator('<i class="fa-solid fa-clock"></i>', formatTime(newTime));
-            } else if (dragType === 'volume') {
-                e.preventDefault();
-                let newVol = startVol - (diffY / 200); // Swipe up (negative Y) increases volume
-                newVol = Math.max(0, Math.min(1, newVol));
-                video.volume = newVol;
-                showIndicator('<i class="fa-solid fa-volume-high"></i>', Math.round(newVol * 100) + '%');
-            }
-        }, {passive: false});
-
-        gestureLayer.addEventListener('touchend', (e) => {
-            isDragging = false; 
-            actionIndicator.classList.add('hidden');
-            if(dragType === 'seek') { 
-                video.play(); 
-            } else if (!dragType) {
-                // Was just a tap
-                if (controlsOverlay.style.opacity === '0') showControls();
-                else hideControls();
-            }
-            dragType = null;
-        });
-
-        // PC Mouse Support
-        gestureLayer.addEventListener('mousedown', (e) => {
-            isDragging = true; dragType = null;
-            dragStartX = getX(e); dragStartY = getY(e);
-            startVidTime = video.currentTime; startVol = video.volume;
-        });
-        gestureLayer.addEventListener('mousemove', (e) => {
-            if(!isDragging) return; 
-            const diffX = getX(e) - dragStartX;
-            const diffY = getY(e) - dragStartY;
-            if(!dragType) {
-                if(Math.abs(diffX) > 20) { dragType = 'seek'; video.pause(); }
-                else if (Math.abs(diffY) > 20) { dragType = 'volume'; }
-            }
-            if(dragType === 'seek') {
-                let newTime = startVidTime + (diffX * 0.3); 
-                newTime = Math.max(0, Math.min(video.duration || 0, newTime));
-                video.currentTime = newTime;
-                showIndicator('<i class="fa-solid fa-clock"></i>', formatTime(newTime));
-            } else if (dragType === 'volume') {
-                let newVol = startVol - (diffY / 200); 
-                newVol = Math.max(0, Math.min(1, newVol));
-                video.volume = newVol;
-                showIndicator('<i class="fa-solid fa-volume-high"></i>', Math.round(newVol * 100) + '%');
-            }
-        });
-        gestureLayer.addEventListener('mouseup', () => {
-            isDragging = false; actionIndicator.classList.add('hidden');
-            if(dragType === 'seek') video.play();
-            else if (!dragType) { controlsOverlay.style.opacity === '0' ? showControls() : hideControls(); }
-            dragType = null;
-        });
-
-        function showIndicator(iconHtml, text) {
-            actionIndicator.innerHTML = `${iconHtml} <span>${text}</span>`;
-            actionIndicator.classList.remove('hidden'); 
-        }
-
-        // --- UI & BUTTONS ---
-        function togglePlay() { video.paused ? video.play() : video.pause(); showControls(); }
+        var btn = document.getElementById('mainBtn');
+        btn.innerHTML = "২য় বিজ্ঞাপন দেখুন (৩০ সেকেন্ড অপেক্ষা করুন)";
+        btn.className = "verify-btn btn-ad";
+      });
+    } 
+    else if (step === 2) {
+      window.open(AD_2, '_blank');
+      startVerification(function() {
+        step = 3;
+        document.getElementById('stepTitle').innerHTML = "ভেরিফিকেশন সম্পন্ন হয়েছে!";
+        document.getElementById('stepBadge').innerText = "Complete";
+        document.getElementById('stepBadge').style.background = "#bbf7d0";
+        document.getElementById('stepBadge').style.color = "#166534";
+        document.getElementById('stepDesc').innerHTML = "আপনার ভেরিফিকেশন সফল! নিচের লিংকে ক্লিক করে সরাসরি অ্যাপটি ডাউনলোড করুন।";
         
-        function updatePlayPauseUI(isPlaying) {
-            document.getElementById('center-play-icon').className = isPlaying ? "hidden" : "fa-solid fa-play text-6xl md:text-7xl opacity-90 hover:opacity-100";
-            document.getElementById('bottom-play-icon').className = isPlaying ? "fa-solid fa-pause" : "fa-solid fa-play";
+        var btn = document.getElementById('mainBtn');
+        btn.innerHTML = "Download App Now (Telegram)";
+        btn.className = "verify-btn btn-download";
+      });
+    } 
+    else if (step === 3) {
+      window.open(FINAL_DOWNLOAD, '_blank');
+    }
+  }
+
+  function startVerification(onComplete) {
+    isRunning = true;
+    startTime = Date.now();
+    remainingSeconds = REQUIRED_SECONDS;
+
+    var timerBox = document.getElementById('timerBox');
+    var countdown = document.getElementById('countdown');
+    var progressFill = document.getElementById('progressFill');
+    var btn = document.getElementById('mainBtn');
+
+    timerBox.style.display = 'block';
+    countdown.innerText = remainingSeconds;
+    progressFill.style.width = '0%';
+
+    btn.className = "verify-btn btn-locked";
+    btn.innerHTML = "ভেরিফিকেশন চলছে... (" + remainingSeconds + "s)";
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      remainingSeconds--;
+      countdown.innerText = remainingSeconds;
+      btn.innerHTML = "ভেরিফিকেশন চলছে... (" + remainingSeconds + "s)";
+
+      var percent = ((REQUIRED_SECONDS - remainingSeconds) / REQUIRED_SECONDS) * 100;
+      progressFill.style.width = percent + '%';
+
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timerBox.style.display = 'none';
+        onComplete();
+      }
+    }, 1000);
+  }
+
+  // ব্যবহারকারী যদি ৩০ সেকেন্ড শেষ হওয়ার আগেই বিজ্ঞাপনের পেজ কেটে এই ট্যাবে ফিরে আসে
+  window.addEventListener('focus', function() {
+    if (isRunning && remainingSeconds > 0) {
+      var elapsedTime = (Date.now() - startTime) / 1000;
+      
+      // কমপক্ষে ২৮ সেকেন্ড অ্যাড পেজে না থেকে ফিরে আসলে ভেরিফিকেশন ফেইল ধরা হবে
+      if (elapsedTime < (REQUIRED_SECONDS - 2)) {
+        clearInterval(timerInterval);
+        isRunning = false;
+
+        document.getElementById('timerBox').style.display = 'none';
+        
+        var btn = document.getElementById('mainBtn');
+        btn.className = "verify-btn btn-ad";
+        
+        if (step === 1) {
+          btn.innerHTML = "পুনরায় ১ম বিজ্ঞাপন দেখুন (৩০ সেকেন্ড)";
+          showWarning("⚠️ <b>সতর্কতা:</b> আপনি বিজ্ঞাপনটি পুরোপুরি ৩০ সেকেন্ড না দেখেই ফিরে এসেছেন! ভেরিফিকেশন ব্যর্থ হয়েছে। আবার ক্লিক করুন।");
+        } else if (step === 2) {
+          btn.innerHTML = "পুনরায় ২য় বিজ্ঞাপন দেখুন (৩০ সেকেন্ড)";
+          showWarning("⚠️ <b>সতর্কতা:</b> ২য় বিজ্ঞাপনটি সম্পূর্ণ ৩০ সেকেন্ড দেখা হয়নি! অনুগ্রহ করে আবার চেষ্টা করুন।");
         }
-
-        function toggleStretch() {
-            video.classList.toggle('video-contain'); 
-            video.classList.toggle('video-cover');
-            document.getElementById('stretch-icon').className = video.classList.contains('video-cover') ? "fa-solid fa-compress" : "fa-solid fa-expand";
-        }
-
-        function toggleFullscreen() {
-            const playerView = document.getElementById('player-view');
-            if (!document.fullscreenElement) {
-                playerView.requestFullscreen().catch(err => console.log(err));
-            } else {
-                document.exitFullscreen();
-            }
-        }
-
-        // Handle Fullscreen UI updates
-        document.addEventListener('fullscreenchange', () => {
-            const icon = document.getElementById('fullscreen-icon');
-            icon.className = document.fullscreenElement ? "fa-solid fa-compress" : "fa-solid fa-expand";
-        });
-
-        function showControls() {
-            clearTimeout(controlsTimeout);
-            controlsOverlay.style.opacity = '1';
-            controlsOverlay.classList.remove('pointer-events-none');
-            if (!video.paused) {
-                controlsTimeout = setTimeout(hideControls, 3000);
-            }
-        }
-        function hideControls() {
-            if(!video.paused) {
-                controlsOverlay.style.opacity = '0';
-                controlsOverlay.classList.add('pointer-events-none');
-            }
-        }
-
-        // Video Events
-        video.addEventListener('play', () => { updatePlayPauseUI(true); showControls(); });
-        video.addEventListener('pause', () => { updatePlayPauseUI(false); showControls(); });
-        video.addEventListener('timeupdate', () => {
-            if(video.duration) {
-                document.getElementById('progress-bar').value = (video.currentTime / video.duration) * 100;
-                document.getElementById('current-time').innerText = formatTime(video.currentTime);
-                document.getElementById('duration-time').innerText = formatTime(video.duration);
-            }
-        });
-
-        document.getElementById('progress-bar').addEventListener('input', (e) => {
-            video.currentTime = (e.target.value / 100) * video.duration;
-            showControls();
-        });
-
-        function formatTime(s) {
-            if (isNaN(s)) return "00:00";
-            return `${Math.floor(s/60).toString().padStart(2,'0')}:${Math.floor(s%60).toString().padStart(2,'0')}`;
-        }
-
-        // Download System
-        function startDownload() {
-            const dlId = `${currentActiveItem.id}_${currentEpIndex}`;
-            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
-            if (downloads.find(dl => dl.dlId === dlId)) { alert('Already Downloaded!'); return; }
-            downloads.push({
-                dlId: dlId, movieId: currentActiveItem.id, title: currentActiveItem.title,
-                poster: currentActiveItem.poster, link: currentActiveItem.episodes[currentEpIndex].link, size: "450 MB"
-            });
-            localStorage.setItem('moviebox_downloads', JSON.stringify(downloads));
-            alert('Saved to Downloads!');
-            document.getElementById('dl-badge').classList.remove('hidden');
-        }
-
-        function loadDownloads() {
-            const dlContainer = document.getElementById('downloaded-items-container');
-            let downloads = JSON.parse(localStorage.getItem('moviebox_downloads')) || [];
-            if (downloads.length === 0) {
-                dlContainer.innerHTML = `<p class="text-center text-gray-500 mt-10">No offline videos.</p>`;
-                return;
-            }
-            dlContainer.innerHTML = '';
-            downloads.reverse().forEach(dl => {
-                dlContainer.innerHTML += `
-                <div class="bg-[#1a1f29] rounded-xl p-3 flex items-center gap-4 border border-gray-800 shadow-lg">
-                    <img src="${dl.poster}" class="w-20 h-14 rounded-lg object-cover">
-                    <div class="flex-1 overflow-hidden" onclick="openPlayer(${dl.movieId}, 'downloads-view')">
-                        <h4 class="font-bold text-sm text-white truncate">${dl.title}</h4>
-                        <p class="text-xs text-green-500 mt-1">Downloaded</p>
-                    </div>
-                </div>`;
-            });
-        }
-
-        window.onload = renderContent;
-    </script>
-</body>
-</html>
+      }
+    }
+  });
+</script>
