@@ -1,0 +1,327 @@
+<meta charset="UTF-8">
+
+<style>
+  .app-download-box {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 20px;
+    background-color: #ffffff;
+    max-width: 500px;
+    margin: 20px auto;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+  }
+  .app-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 16px;
+  }
+  .app-icon img {
+    width: 64px;
+    height: 64px;
+    border-radius: 14px;
+    object-fit: cover;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  }
+  .app-details h4 {
+    margin: 0 0 6px;
+    color: #0f172a;
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .app-tags {
+    display: flex;
+    gap: 8px;
+  }
+  .badge {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: #e0f2fe;
+    color: #0284c7;
+  }
+  .badge.size {
+    background: #f1f5f9;
+    color: #64748b;
+  }
+
+  /* ভেরিফিকেশন কার্ড */
+  .ad-verify-container {
+    margin-top: 18px;
+    background: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-radius: 12px;
+    padding: 16px;
+    text-align: left;
+  }
+  .step-indicator {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .step-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #92400e;
+  }
+  .step-badge {
+    background: #fde68a;
+    color: #78350f;
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 20px;
+  }
+  .verify-desc {
+    font-size: 13px;
+    color: #475569;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+
+  /* ওয়ার্নিং মেসেজ বক্স */
+  .warning-box {
+    display: none;
+    background: #fee2e2;
+    border: 1px solid #f87171;
+    color: #991b1b;
+    padding: 12px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 14px;
+    line-height: 1.4;
+  }
+
+  /* টাইমার ও প্রগ্রেস বার */
+  .timer-container {
+    display: none;
+    margin-bottom: 15px;
+    text-align: center;
+  }
+  .timer-text {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ea580c;
+    margin-bottom: 6px;
+  }
+  .progress-bg {
+    width: 100%;
+    height: 8px;
+    background: #fed7aa;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    width: 0%;
+    height: 100%;
+    background: #ea580c;
+    transition: width 1s linear;
+  }
+
+  /* বাটন স্টাইল */
+  .verify-btn {
+    display: block !important;
+    width: 100% !important;
+    padding: 14px !important;
+    text-align: center !important;
+    border-radius: 10px !important;
+    font-weight: 700 !important;
+    font-size: 15px !important;
+    border: none !important;
+    cursor: pointer !important;
+    box-sizing: border-box !important;
+    text-decoration: none !important;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+  .btn-ad {
+    background-color: #f97316 !important;
+    color: #ffffff !important;
+  }
+  .btn-ad:hover {
+    background-color: #ea580c !important;
+  }
+  .btn-download {
+    background-color: #0284c7 !important;
+    color: #ffffff !important;
+  }
+  .btn-download:hover {
+    background-color: #0369a1 !important;
+  }
+  .btn-locked {
+    background-color: #cbd5e1 !important;
+    color: #64748b !important;
+    cursor: not-allowed !important;
+  }
+</style>
+
+<div class="app-download-box">
+  <div class="app-header">
+    <div class="app-icon">
+      <img alt="App Icon" src="https://images-eds-ssl.xboxlive.com/image?url=4rt9.lXDC4H_93laV1_eHHFT949fUipzkiFOBH3fAiZZUCdYojwUyX2aTonS1aIwMrx6NUIsHfUHSLzjGJFxxlMJI9cVisUnAAirr_X4NHhMHcm1RJXMD0M5dZdpCEKcfvvUiq4kcePuzVNnFyvyjoLkv6cIKY8Zf1N1VNvQ.Wc-&amp;format=source" />
+    </div>
+    <div class="app-details">
+      <h4>Moviebox</h4>
+      <div class="app-tags">
+        <span class="badge">v1.0</span>
+        <span class="badge size">Size: 15 MB</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="ad-verify-container">
+    <div class="step-indicator">
+      <span class="step-title" id="stepTitle">বিজ্ঞাপন ভেরিফিকেশন (ধাপ ১/২)</span>
+      <span class="step-badge" id="stepBadge">Step 1 of 2</span>
+    </div>
+
+    <p class="verify-desc" id="stepDesc">
+      মূল ডাউনলোড লিংক পেতে ১ম বিজ্ঞাপনে ক্লিক করে ৩০ সেকেন্ড অপেক্ষা করুন।
+    </p>
+
+    <!-- ওয়ার্নিং নোটিশ (বিজ্ঞাপন না দেখলে প্রদর্শিত হবে) -->
+    <div class="warning-box" id="warningBox">
+      ⚠️ <b>সতর্কতা:</b> আপনি পুরো ৩০ সেকেন্ড বিজ্ঞাপনটি দেখেননি অথবা পেজটি বন্ধ করে দিয়েছেন! ডাউনলোড লিংক পেতে অনুগ্রহ করে আবার চেষ্টা করুন।
+    </div>
+
+    <!-- টাইমার ও প্রগ্রেস বার -->
+    <div class="timer-container" id="timerBox">
+      <div class="timer-text">বিজ্ঞাপন পেজটি চালু রাখুন: <span id="countdown">30</span> সেকেন্ড</div>
+      <div class="progress-bg">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+    </div>
+
+    <!-- ইন্টারঅ্যাকশন বাটন -->
+    <button type="button" id="mainBtn" class="verify-btn btn-ad" onclick="processStep()">
+      ১ম বিজ্ঞাপন দেখুন (৩০ সেকেন্ড অপেক্ষা করুন)
+    </button>
+  </div>
+</div>
+
+<script>
+  // কনফিগারেশন
+  var AD_1 = "https://www.profitableratecpmnetwork.com/sctumitqju?key=03700210ccb7ee3503a9ed08eccb3254"; 
+  var AD_2 = "https://www.profitableratecpmnetwork.com/sctumitqju?key=03700210ccb7ee3503a9ed08eccb3254"; 
+  var FINAL_DOWNLOAD = "https://educationwire.page.gd/wp-content/uploads/2026/10/Moviebox.apk"; 
+  var REQUIRED_SECONDS = 30; // ৩০ সেকেন্ডের ভেরিফিকেশন
+
+  var step = 1;
+  var isRunning = false;
+  var timerInterval = null;
+  var startTime = 0;
+  var remainingSeconds = REQUIRED_SECONDS;
+
+  function showWarning(msg) {
+    var warningEl = document.getElementById('warningBox');
+    if (msg) warningEl.innerHTML = msg;
+    warningEl.style.display = 'block';
+  }
+
+  function hideWarning() {
+    document.getElementById('warningBox').style.display = 'none';
+  }
+
+  function processStep() {
+    if (isRunning) return;
+    hideWarning();
+
+    if (step === 1) {
+      window.open(AD_1, '_blank');
+      startVerification(function() {
+        step = 2;
+        document.getElementById('stepTitle').innerHTML = "বিজ্ঞাপন ভেরিফিকেশন (ধাপ ২/২)";
+        document.getElementById('stepBadge').innerText = "Step 2 of 2";
+        document.getElementById('stepDesc').innerHTML = "অভিনন্দন! এবার ২য় বিজ্ঞাপনে ক্লিক করে শেষ ৩০ সেকেন্ড অপেক্ষা করুন।";
+        
+        var btn = document.getElementById('mainBtn');
+        btn.innerHTML = "২য় বিজ্ঞাপন দেখুন (৩০ সেকেন্ড অপেক্ষা করুন)";
+        btn.className = "verify-btn btn-ad";
+      });
+    } 
+    else if (step === 2) {
+      window.open(AD_2, '_blank');
+      startVerification(function() {
+        step = 3;
+        document.getElementById('stepTitle').innerHTML = "ভেরিফিকেশন সম্পন্ন হয়েছে!";
+        document.getElementById('stepBadge').innerText = "Complete";
+        document.getElementById('stepBadge').style.background = "#bbf7d0";
+        document.getElementById('stepBadge').style.color = "#166534";
+        document.getElementById('stepDesc').innerHTML = "আপনার ভেরিফিকেশন সফল! নিচের লিংকে ক্লিক করে সরাসরি অ্যাপটি ডাউনলোড করুন।";
+        
+        var btn = document.getElementById('mainBtn');
+        btn.innerHTML = "Download App Now (Telegram)";
+        btn.className = "verify-btn btn-download";
+      });
+    } 
+    else if (step === 3) {
+      window.open(FINAL_DOWNLOAD, '_blank');
+    }
+  }
+
+  function startVerification(onComplete) {
+    isRunning = true;
+    startTime = Date.now();
+    remainingSeconds = REQUIRED_SECONDS;
+
+    var timerBox = document.getElementById('timerBox');
+    var countdown = document.getElementById('countdown');
+    var progressFill = document.getElementById('progressFill');
+    var btn = document.getElementById('mainBtn');
+
+    timerBox.style.display = 'block';
+    countdown.innerText = remainingSeconds;
+    progressFill.style.width = '0%';
+
+    btn.className = "verify-btn btn-locked";
+    btn.innerHTML = "ভেরিফিকেশন চলছে... (" + remainingSeconds + "s)";
+
+    clearInterval(timerInterval);
+    timerInterval = setInterval(function() {
+      remainingSeconds--;
+      countdown.innerText = remainingSeconds;
+      btn.innerHTML = "ভেরিফিকেশন চলছে... (" + remainingSeconds + "s)";
+
+      var percent = ((REQUIRED_SECONDS - remainingSeconds) / REQUIRED_SECONDS) * 100;
+      progressFill.style.width = percent + '%';
+
+      if (remainingSeconds <= 0) {
+        clearInterval(timerInterval);
+        isRunning = false;
+        timerBox.style.display = 'none';
+        onComplete();
+      }
+    }, 1000);
+  }
+
+  // ব্যবহারকারী যদি ৩০ সেকেন্ড শেষ হওয়ার আগেই বিজ্ঞাপনের পেজ কেটে এই ট্যাবে ফিরে আসে
+  window.addEventListener('focus', function() {
+    if (isRunning && remainingSeconds > 0) {
+      var elapsedTime = (Date.now() - startTime) / 1000;
+      
+      // কমপক্ষে ২৮ সেকেন্ড অ্যাড পেজে না থেকে ফিরে আসলে ভেরিফিকেশন ফেইল ধরা হবে
+      if (elapsedTime < (REQUIRED_SECONDS - 2)) {
+        clearInterval(timerInterval);
+        isRunning = false;
+
+        document.getElementById('timerBox').style.display = 'none';
+        
+        var btn = document.getElementById('mainBtn');
+        btn.className = "verify-btn btn-ad";
+        
+        if (step === 1) {
+          btn.innerHTML = "পুনরায় ১ম বিজ্ঞাপন দেখুন (৩০ সেকেন্ড)";
+          showWarning("⚠️ <b>সতর্কতা:</b> আপনি বিজ্ঞাপনটি পুরোপুরি ৩০ সেকেন্ড না দেখেই ফিরে এসেছেন! ভেরিফিকেশন ব্যর্থ হয়েছে। আবার ক্লিক করুন।");
+        } else if (step === 2) {
+          btn.innerHTML = "পুনরায় ২য় বিজ্ঞাপন দেখুন (৩০ সেকেন্ড)";
+          showWarning("⚠️ <b>সতর্কতা:</b> ২য় বিজ্ঞাপনটি সম্পূর্ণ ৩০ সেকেন্ড দেখা হয়নি! অনুগ্রহ করে আবার চেষ্টা করুন।");
+        }
+      }
+    }
+  });
+</script>
